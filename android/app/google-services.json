@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "164744273068",
+    "project_id": "the-moscow-post-ce8c1",
+    "storage_bucket": "the-moscow-post-ce8c1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:164744273068:android:9e868a48dc30591ecc9309",
+        "android_client_info": {
+          "package_name": "ru.bezfy.neep"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcgnJJKSJ_TdytklLKXx7T5SP7Vi8RZCE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,85 @@
+name: the_moscow_post
+description: "App for review actuality news"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.3 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Utility Packages
+  intl: ^0.17.0
+  logger: ^2.0.1
+  url_launcher: ^6.3.0
+  flutter_native_splash: ^2.4.0
+  http: ^0.13.4
+  share: ^2.0.4
+  radio_player: ^1.6.0
+  mini_music_visualizer: ^1.1.4
+  push: ^2.3.0
+  shrink_sidemenu: ^2.0.0+2-null-safety
+  # Icons
+  iconsax: ^0.0.8
+  cupertino_icons: ^1.0.6
+
+  # State Management
+  get: ^4.6.5
+  get_storage: ^2.1.1
+  firebase_core: ^3.2.0
+  firebase_messaging: ^15.0.3
+  flutter_local_notifications: ^17.2.1+2
+  firebase_analytics: ^11.2.0
+  workmanager: ^0.5.2
+  shared_preferences: ^2.2.3
+  siri_wave: ^2.0.0+1
+  just_waveform: ^0.0.5
+  firebase_crashlytics: ^4.0.3
+  flutter_html: ^3.0.0-beta.2
+  webview_flutter: ^4.8.0
+  webview_flutter_android: ^3.16.5
+  webview_flutter_wkwebview: ^3.14.0
+  audio_service: ^0.18.15
+  just_audio: ^0.9.39
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^3.0.0
+
+flutter:
+
+  uses-material-design: true
+  assets:
+    - assets/fonts/
+    - assets/images/
+  fonts:
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat-Light.ttf
+          weight: 500
+          style: normal
+
+    - family: Open_Sans
+      fonts:
+        - asset: assets/fonts/OpenSans_SemiCondensed-Light.ttf
+          weight: 500
+          style: normal
+  # example:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages
