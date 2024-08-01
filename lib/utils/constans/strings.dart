@@ -27,7 +27,7 @@ class Strings {
   static const String errorMessage = "Произошла ошибка";
 
   // box message
-  static const String newsHour = "Новость часа";
+  static const String newsHour = "Тема часа";
 
   // field text
   static const String hintSearch = "Поиск";

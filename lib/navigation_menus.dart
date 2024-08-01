@@ -1,5 +1,6 @@
 import "package:firebase_core/firebase_core.dart";
 import "package:firebase_messaging/firebase_messaging.dart";
+import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:get/get.dart";
 import "package:iconsax/iconsax.dart";
@@ -14,7 +15,6 @@ import "package:the_moscow_post/utils/constans/strings.dart";
 
 class NavigationMenu extends StatefulWidget {
   const NavigationMenu({super.key});
-
   @override
   State<NavigationMenu> createState() => _NavigationMenuState();
 }
@@ -22,6 +22,7 @@ class NavigationMenu extends StatefulWidget {
 class _NavigationMenuState extends State<NavigationMenu> {
   final GlobalKey<SideMenuState> sideMenuKey = GlobalKey<SideMenuState>();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  final NavigationController controller = Get.put(NavigationController());
   @override
   void initState() {
     // TODO: implement initState
@@ -38,8 +39,6 @@ class _NavigationMenuState extends State<NavigationMenu> {
   }
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(NavigationController());
-
     return SideMenu(
       menu: SideMenuList(menuKey: sideMenuKey,),
       key: sideMenuKey,
@@ -101,16 +100,40 @@ class _NavigationMenuState extends State<NavigationMenu> {
           actions: [
             IconButton(
               onPressed: () {
-                controller.selectedIndex.value = 1;
+                // controller.selectedIndex.value = 1;
               },
               icon: const Icon(Icons.search,
-                  size: 35, color: AppColors.secondary),
+                  size: 35, color: AppColors.primary),
             ),
           ],
         ),
         bottomNavigationBar: Obx(() => BottomNavigationBar(
                 currentIndex: controller.selectedIndex.value,
-                onTap: (index) => controller.selectedIndex.value = index,
+            onTap: (index) {
+              if (index == 0 && controller.selectedIndex.value == 0) {
+                // Прокручиваем вверх, если мы на главной странице
+                controller.homeScrollController.animateTo(
+                  0.0,
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              } else {
+                // Переключаемся на выбранный экран
+                controller.selectedIndex.value = index;
+              }
+
+              if (index == 2 && controller.selectedIndex.value == 2) {
+                // Прокручиваем вверх, если мы на главной странице
+                controller.categoriesScrollController.animateTo(
+                  0.0,
+                  duration: Duration(seconds: 1),
+                  curve: Curves.easeInOut,
+                );
+              } else {
+                // Переключаемся на выбранный экран
+                controller.selectedIndex.value = index;
+              }
+            },
                 backgroundColor: AppColors.primary,
                 selectedItemColor: Colors.white,
                 unselectedItemColor: Colors.grey,
@@ -149,10 +172,17 @@ class _NavigationMenuState extends State<NavigationMenu> {
 class NavigationController extends GetxController {
   final Rx<int> selectedIndex = 0.obs;
 
-  final screens = [
-    const HomeScreen(),
-    const SearchScreen(),
-    const CategoriesScreen(),
-    const RadioScreen(),
-  ];
+  final ScrollController homeScrollController = ScrollController();
+  final ScrollController categoriesScrollController = ScrollController();
+  late final List<Widget> screens;
+
+  NavigationController() {
+    screens = [
+      HomeScreen(scrollController: homeScrollController),
+      const SearchScreen(),
+      CategoriesScreen(scrollController: categoriesScrollController),
+      const RadioScreen(),
+    ];
+  }
+
 }

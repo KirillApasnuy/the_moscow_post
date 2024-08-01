@@ -45,10 +45,17 @@ class _SearchScreenState extends State<SearchScreen> {
                         width: window.physicalSize.width * 0.282,
                         child: TextField(
                           controller: _textController,
+                          onSubmitted: (text) {
+                            addNewsSearchList(_textController.text);
+                            setState(() {
+
+                            });
+                          },
                           decoration: InputDecoration(
                             hintText: Strings.hintSearch,
                             focusColor: AppColors.primary,
                             hoverColor: AppColors.primary,
+
                             hintStyle: const TextStyle(
                               fontSize: 15,
                               fontFamily: "montserrat",
@@ -69,6 +76,9 @@ class _SearchScreenState extends State<SearchScreen> {
                       IconButton(
                           onPressed: () {
                             addNewsSearchList(_textController.text);
+                            setState(() {
+
+                            });
                           },
                           icon: const Icon(
                             Icons.search,
@@ -76,18 +86,29 @@ class _SearchScreenState extends State<SearchScreen> {
                           ))
                     ],
                   )),
+              isLoading ? const Column(
+                children: [
+                  SizedBox(height: 200,),
+                  Center(
+                    child: CircularProgressIndicator(color: AppColors.primary,),
+                  )
+                ],
+              )
+                  :
               _listNews.isEmpty
                   ? Container(
                       padding: EdgeInsets.only(top: 100),
                       child: Text(
-                        "Нет новостей",
+                        textAlign: TextAlign.center,
+                        "Введите текст для поиска",
                         style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontFamily: "montserrat",
                             fontSize: 30),
                       ),
                     )
-                  : Expanded(
+                  :
+                   Expanded(
                       child: ListView.builder(
                         itemCount: _listNews.length,
                         itemBuilder: (context, index) {
@@ -106,8 +127,9 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void addNewsSearchList(String search) {
-    setState(() {
-      isLoading = true; // Устанавливаем флаг загрузки
+
+    isLoading = true;
+    setState(() { // Устанавливаем флаг загрузки
     });
 
     newsController.fetchNewsSearchList(search).then((listNews) {

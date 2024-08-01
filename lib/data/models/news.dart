@@ -11,6 +11,8 @@ class News {
   final String fullUrl;
   final String author;
   final int day;
+  final bool viewCountDisplay;
+  final String serverHost;
   const News({required this.author,
     required this.id,
     required this.rubricName,
@@ -23,22 +25,26 @@ class News {
     required this.text,
     required this.fullUrl,
     required this.day,
+    required this.viewCountDisplay,
+    required this.serverHost,
   });
 
-  factory News.fromJson(Map<dynamic, dynamic> json) {
+  factory News.fromJson(Map<dynamic, dynamic> json, viewCountDisplay, serverHost) {
     return News(
       id: json["id"] ?? 0 as int,
       rubricName: json["rubric_name"]?? "",
       rubricId: json["rubric_id"] ?? 0 as int ,
       title: json["title"] ?? "",
       description: json["description"] ?? "",
-      mediumImageTitleUrl: "http://${json["medium_image_src"]}" ?? "url null",
-      updateDateTime: DateTime.parse(json["update_datetime"]),
+      mediumImageTitleUrl: "http://$serverHost${json["medium_image_src"]}" ?? "url null",
+      updateDateTime: DateTime.parse(json["create_datetime"]),
       viewsCount: json["views_count"] ?? 0 as int,
       text: json["text"] ?? "",
       fullUrl: json["full_url"] ?? "",
       author: json["author"] ?? "",
-      day: json["day"],
+      day: json["day"] ?? 0 as int,
+      viewCountDisplay: viewCountDisplay,
+      serverHost: serverHost,
     );
   }
 
@@ -55,6 +61,8 @@ class News {
         "full_url": fullUrl,
         "author": author,
         "day": day,
+        "serverHost": serverHost,
+        "viewCountDisplay": viewCountDisplay,
       };
 
   @override
@@ -73,6 +81,8 @@ class News {
         text == other.text &&
         author == other.author &&
         day == other.day &&
+        viewCountDisplay == other.viewCountDisplay &&
+        serverHost == other.serverHost &&
         fullUrl == other.fullUrl;
   }
 
@@ -92,6 +102,8 @@ class News {
     result = 3 * result + fullUrl.hashCode;
     result = 3 * result + author.hashCode;
     result = 3 * result + day.hashCode;
+    result = 3 * result + serverHost.hashCode;
+    result = 3 * result + viewCountDisplay.hashCode;
 
     return result;
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:the_moscow_post/controllers/context/context_controller.dart';
 import 'package:the_moscow_post/data/models/news.dart';
 import 'package:the_moscow_post/screens/news_details/news_details.dart';
@@ -11,32 +12,33 @@ class AppNewsCardHorizontal extends StatelessWidget {
   AppNewsCardHorizontal({
     required this.news,
     super.key,
-    required this.listNews, required this.numberItem,
+    required this.listNews,
+    required this.numberItem,
   });
 
   final News news;
   final double height = 140;
   int numberItem = 0;
   List<News> listNews;
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = ContextController.getWidthScreen(context);
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) {
-              return NewsDetails(
-                news: news,
-                numberItem: numberItem,
-                listNews: listNews,
-              );
-            }));
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return NewsDetails(
+            news: news,
+            numberItem: numberItem,
+            listNews: listNews,
+          );
+        }));
       },
       child: Container(
         width: screenWidth - 14,
         height: height,
-        margin: const EdgeInsets.only(left: 7, top: 15, right: 7),
+        margin: const EdgeInsets.only(left: 7, top: 8, right: 7, bottom: 8),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -62,16 +64,26 @@ class AppNewsCardHorizontal extends StatelessWidget {
                     topLeft: Radius.circular(10),
                     bottomLeft: Radius.circular(10)),
               ),
-              child: Image.network(news.mediumImageTitleUrl,
+              child: Image.network(
+                news.mediumImageTitleUrl,
                 errorBuilder: (context, error, stackTrace) {
-                printError(info: "Uri not found: ${news.mediumImageTitleUrl}");
-                  return Container(
-                    padding: const EdgeInsets.all(50),
-                    child: const CircularProgressIndicator(),
+                  printError(
+                      info: "Uri not found: ${news.mediumImageTitleUrl}");
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(50),
+                        height: height,
+                        width: height,
+                        child: const CircularProgressIndicator(color: AppColors.primary,),
+                      ),
+                    ],
                   );
                 },
-                fit: BoxFit.cover,),
-
+                fit: BoxFit.cover,
+              ),
             ),
             Expanded(
               child: Padding(
@@ -81,6 +93,7 @@ class AppNewsCardHorizontal extends StatelessWidget {
                     children: [
                       Text(
                         EditText.removeHtmlTag(news.title),
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                             fontSize: 15,
@@ -105,6 +118,7 @@ class AppNewsCardHorizontal extends StatelessWidget {
                               const SizedBox(
                                 width: 5,
                               ),
+                              news.viewCountDisplay ?
                               Row(
                                 children: [
                                   Text(
@@ -120,31 +134,22 @@ class AppNewsCardHorizontal extends StatelessWidget {
                                     color: AppColors.primary,
                                   )
                                 ],
+                              ): Row(
+                                children: [
+                                  const Icon(
+                                    Icons.library_books_outlined,
+                                    size: 15,
+                                    color: AppColors.primary,
+                                  ),
+                                  Text(
+                                    "${news.rubricName.toString()}",
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const Spacer(),
-                              ElevatedButton(
-                                onPressed: () {
-                                  debugPrint("Push button for read");
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) {
-                                        return NewsDetails(
-                                          news: news,
-                                          numberItem: numberItem,
-                                          listNews: listNews,
-                                        );
-                                      }));
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.primary,
-                                    foregroundColor: Colors.white,
-                                    shadowColor: Colors.black,
-                                    elevation: 5,
-                                    textStyle: const TextStyle(
-                                        fontSize: 17,
-                                        fontFamily: "montserrat",
-                                        fontWeight: FontWeight.w600)),
-                                child: const Text(Strings.horCardBtn),
-                              )
                             ],
                           ))
                     ],

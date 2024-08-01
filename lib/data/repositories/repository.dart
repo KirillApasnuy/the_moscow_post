@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:the_moscow_post/data/models/articles.dart';
+import 'package:the_moscow_post/data/models/radioVerify.dart';
 
 import '../../utils/constans/strings.dart';
 import '../models/news.dart';
@@ -15,7 +16,7 @@ class Repository {
     printInfo(info: "status code: ${response.statusCode}");
     var body = json.decode(response.body)["data"]["all"];
     for (var i = 0; i < body.length; i++) {
-      newsList.add(News.fromJson(body[i]));
+      newsList.add(News.fromJson(body[i], json.decode(response.body)["view_count_display"] == "true" ? true : false, json.decode(response.body)["serverHost"]));
     }
     return newsList;
   }
@@ -27,7 +28,7 @@ class Repository {
     printInfo(info: "status code: ${response.statusCode}");
     var body = json.decode(response.body)["data"]["all"];
     for (var i = 0; i < body.length; i++) {
-      moreNewsList.add(News.fromJson(body[i]));
+      moreNewsList.add(News.fromJson(body[i], json.decode(response.body)["view_count_display"] == "true" ? true : false, json.decode(response.body)["serverHost"]));
     }
     return moreNewsList;
   }
@@ -39,7 +40,7 @@ class Repository {
     printInfo(info: "status code: ${response.statusCode}");
     var body = json.decode(response.body)["data"]["all"];
     for (var i = 0; i < body.length; i++) {
-      newsList.add(News.fromJson(body[i]));
+      newsList.add(News.fromJson(body[i], json.decode(response.body)["view_count_display"] == "true" ? true : false, json.decode(response.body)["serverHost"]));
     }
     return newsList;
   }
@@ -51,7 +52,7 @@ class Repository {
     printInfo(info: "status code: ${response.statusCode}");
     var body = json.decode(response.body)["data"]["all"];
     for (var i = 0; i < body.length; i++) {
-      newsList.add(News.fromJson(body[i]));
+      newsList.add(News.fromJson(body[i], json.decode(response.body)["view_count_display"] == "true" ? true : false, json.decode(response.body)["serverHost"]));
     }
     return newsList;
   }
@@ -62,8 +63,9 @@ class Repository {
     var response = await http.get(url);
     printInfo(info: "status code: ${response.statusCode}");
     var body = json.decode(response.body)["data"]["all"];
+    print(body[0]);
     for (var i = 0; i < body.length; i++) {
-      newsSearchList.add(News.fromJson(body[i]));
+      newsSearchList.add(News.fromJson(body[i], json.decode(response.body)["view_count_display"] == "true" ? true : false, json.decode(response.body)["serverHost"]));
     }
     return newsSearchList;
   }
@@ -73,30 +75,16 @@ class Repository {
     var response = await http.get(url);
     printInfo(info: "status code: ${response.statusCode}");
     var body = json.decode(response.body)["data"];
-    News news = News.fromJson(body);
+    News news = News.fromJson(body, json.decode(response.body)["view_count_display"] == "true" ? true : false, json.decode(response.body)["serverHost"]);
     return news;
   }
-  Future<List<Articles>> getArticlesList() async {
-    List<Articles> articlesList = [];
-    var url = Uri.parse("${_baseUrl}articles?key=${Strings.apiKeyNmapi}");
-    var response = await http.get(url);
-    printInfo(info: "status code: ${response.statusCode}");
-    var body = json.decode(response.body)["data"]["articles"];
-    for (var i = 0; i < body.length; i++) {
-      articlesList.add(Articles.fromJson(body[i]));
-    }
-    return articlesList;
-  }
 
-  Future<List<Articles>> getMoreArticlesList(int page) async {
-    List<Articles> moreArticlesList = [];
-    var url = Uri.parse("${_baseUrl}articles?key=${Strings.apiKeyNmapi}&page=$page");
+  Future<RadioVerify> getRadioVerify() async {
+    var url = Uri.parse("${_baseUrl}all?key=${Strings.apiKeyNmapi}");
     var response = await http.get(url);
     printInfo(info: "status code: ${response.statusCode}");
-    var body = json.decode(response.body)["data"]["articles"];
-    for (var i = 0; i < body.length; i++) {
-      moreArticlesList.add(Articles.fromJson(body[i]));
-    }
-    return moreArticlesList;
+    var body = json.decode(response.body);
+    RadioVerify radioVerify = RadioVerify.fromJson(body);
+    return radioVerify;
   }
 }

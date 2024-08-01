@@ -1,9 +1,6 @@
-import 'dart:developer';
 import 'dart:ui';
 
-import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 import 'package:share/share.dart';
@@ -12,7 +9,6 @@ import 'package:the_moscow_post/controllers/context/context_controller.dart';
 import 'package:the_moscow_post/data/models/news.dart';
 import 'package:the_moscow_post/utils/constans/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../utils/constans/edit_text.dart';
 import '../../utils/constans/strings.dart';
@@ -34,11 +30,13 @@ class NewsDetails extends StatefulWidget {
 }
 
 class _NewsDetailsState extends State<NewsDetails> {
-   // Для Android
-  // WebView.platform = SurfaceWebView();
   @override
-  Widget build(BuildContext context) {// Для Android
-    // WebView.platform = SurfaceWebView();
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
     bool isPreviewNews = false;
     News? news;
     print(widget.numberItem);
@@ -178,7 +176,8 @@ class _NewsDetailsState extends State<NewsDetails> {
                                     ContextController.getWidthScreen(context),
                                 child: Text(
                                   EditText.removeHtmlTag(widget.news.title),
-                                  overflow: TextOverflow.ellipsis,
+                                  // overflow: TextOverflow.ellipsis,
+                                  maxLines: 10,
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 20,
@@ -199,6 +198,7 @@ class _NewsDetailsState extends State<NewsDetails> {
                                               style: const TextStyle(
                                                 fontSize: 11,
                                                 fontFamily: "open_sans",
+                                                overflow: TextOverflow.ellipsis,
                                                 fontWeight: FontWeight.w500,
                                                 color: Colors.white,
                                               )),
@@ -243,7 +243,7 @@ class _NewsDetailsState extends State<NewsDetails> {
                     ),
                     const SizedBox(height: 10),
                     Html(
-                      data: widget.news.text,
+                      data: EditText.addHttpInUri(widget.news.text),
                       style: {
                         "h1": Style(
                           fontSize: FontSize.xSmall,
@@ -255,11 +255,13 @@ class _NewsDetailsState extends State<NewsDetails> {
                           fontFamily: "open_sans",
                           fontWeight: FontWeight.normal,
                         ),
+
                       },
                       onLinkTap: (url, _, __) {
                         printInfo(info: url!);
-                        _launchURL(url!);
+                        _launchURL(url);
                       },
+
                     ),
                     const SizedBox(
                       height: 20,
@@ -311,10 +313,10 @@ class _NewsDetailsState extends State<NewsDetails> {
             ],
           )),
         ),
-      )
-      ,
+      ),
     );
   }
+
   void _launchURL(String url) async {
     // showModalBottomSheet(context: context, builder: (BuildContext context) {
     //   return WebViewWidget(controller: WebViewController()..setJavaScriptMode(JavaScriptMode.unrestricted)..loadRequest(Uri.parse(url!)));
@@ -324,7 +326,7 @@ class _NewsDetailsState extends State<NewsDetails> {
       await launch(url);
     } on Exception catch (ex) {
       printError(info: ex.toString());
-      await launch("${Strings.baseUrl}$url");// } else {
+      await launch("${Strings.baseUrl}$url"); // } else {
     }
     //   throw 'Could not launch $url';
     // }

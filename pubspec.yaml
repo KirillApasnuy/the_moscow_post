@@ -28,10 +28,8 @@ dependencies:
   # State Management
   get: ^4.6.5
   get_storage: ^2.1.1
-  firebase_core: ^3.2.0
   firebase_messaging: ^15.0.3
   flutter_local_notifications: ^17.2.1+2
-  firebase_analytics: ^11.2.0
   workmanager: ^0.5.2
   shared_preferences: ^2.2.3
   siri_wave: ^2.0.0+1
@@ -41,8 +39,8 @@ dependencies:
   webview_flutter: ^4.8.0
   webview_flutter_android: ^3.16.5
   webview_flutter_wkwebview: ^3.14.0
-  audio_service: ^0.18.15
-  just_audio: ^0.9.39
+  swipe_refresh: ^1.1.2
+  jumping_dot: ^0.0.7
 
 dev_dependencies:
   flutter_test:

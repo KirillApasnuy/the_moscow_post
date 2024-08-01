@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import '../../../../utils/constans/colors.dart';
@@ -24,8 +26,9 @@ class FirstNewsCardHorizontal extends StatelessWidget {
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: NetworkImage(
-                    mediumImageTitleUrl),
+                    mediumImageTitleUrl,),
                 fit: BoxFit.cover,
+
               ),
             ),
           ),
@@ -74,9 +77,10 @@ class FirstNewsCardHorizontal extends StatelessWidget {
             bottom: 20,
             left: 10,
             child: Container(
-              width: 250,
+              width: 300,
               child: Text(
                 EditText.removeHtmlTag(title),
+                maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: Colors.white,

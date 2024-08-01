@@ -4,13 +4,12 @@ class EditText {
   static String removeHtmlTag(String htmlText) {
     // Удаляем HTML-теги и получаем текст
     String plainText = parse(parse(htmlText).body!.text).documentElement!.text;
-
+    return plainText;
     // Добавляем пробелы после каждой точки
-    return addSpaceAfterPeriod(plainText);
   }
 
   // Метод для добавления пробелов после точек
-  static String addSpaceAfterPeriod(String text) {
-    return text.replaceAll('.', '. '); // Заменяем каждую точку на точку с пробелом
+  static String addHttpInUri(String text) {
+    return text.replaceAll('176', 'http://176'); // Заменяем каждую точку на точку с пробелом
   }
 }

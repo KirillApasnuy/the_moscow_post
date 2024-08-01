@@ -17,7 +17,7 @@ class NewsCategorySeparator extends StatelessWidget {
         function();
       },
       child: Container(
-        margin: const EdgeInsets.only(top: 10),
+        // margin: const EdgeInsets.only(top: 10),
         width: window.physicalSize.width,
         height: 50,
         color: AppColors.primary,
