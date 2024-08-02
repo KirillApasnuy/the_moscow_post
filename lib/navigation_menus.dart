@@ -5,6 +5,8 @@ import "package:flutter/material.dart";
 import "package:get/get.dart";
 import "package:iconsax/iconsax.dart";
 import "package:shrink_sidemenu/shrink_sidemenu.dart";
+import "package:the_moscow_post/data/controllers/news_controller.dart";
+import "package:the_moscow_post/data/repositories/repository.dart";
 import "package:the_moscow_post/screens/CategoriesScreen.dart";
 import "package:the_moscow_post/screens/HomeScreen.dart";
 import "package:the_moscow_post/screens/RadioScreen.dart";
@@ -23,6 +25,8 @@ class _NavigationMenuState extends State<NavigationMenu> {
   final GlobalKey<SideMenuState> sideMenuKey = GlobalKey<SideMenuState>();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final NavigationController controller = Get.put(NavigationController());
+  NewsController newsController = NewsController(Repository());
+  bool topMenuOn = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -35,6 +39,18 @@ class _NavigationMenuState extends State<NavigationMenu> {
       if (message.notification != null) {
         // Отправка уведомления через Local Notifications
       }
+    });
+    setStateTopMenu();
+    setState(() {
+
+    });
+  }
+  void setStateTopMenu() {
+    newsController.fetchNewsList().then((_listNews) {
+      topMenuOn = _listNews[0].topMenuOn;
+      setState(() {
+
+      });
     });
   }
   @override
@@ -49,14 +65,14 @@ class _NavigationMenuState extends State<NavigationMenu> {
           backgroundColor: const Color.fromRGBO(82, 82, 82, 1),
           centerTitle: true,
           leading: IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.menu,
               size: 35,
-              color: AppColors.primary,
+              color: topMenuOn ? AppColors.accent : AppColors.primary,
             ),
             onPressed: () {
               // controller.selectedIndex.value = 0;
-              // viewSideMenu();
+              if (topMenuOn) viewSideMenu();
             },
           ),
           title: Container(
@@ -121,6 +137,17 @@ class _NavigationMenuState extends State<NavigationMenu> {
                 // Переключаемся на выбранный экран
                 controller.selectedIndex.value = index;
               }
+              if (index == 1 && controller.selectedIndex.value == 1) {
+                // Прокручиваем вверх, если мы на главной странице
+                controller.searchScrollController.animateTo(
+                  0.0,
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              } else {
+                // Переключаемся на выбранный экран
+                controller.selectedIndex.value = index;
+              }
 
               if (index == 2 && controller.selectedIndex.value == 2) {
                 // Прокручиваем вверх, если мы на главной странице
@@ -174,12 +201,13 @@ class NavigationController extends GetxController {
 
   final ScrollController homeScrollController = ScrollController();
   final ScrollController categoriesScrollController = ScrollController();
+  final ScrollController searchScrollController = ScrollController();
   late final List<Widget> screens;
 
   NavigationController() {
     screens = [
       HomeScreen(scrollController: homeScrollController),
-      const SearchScreen(),
+      SearchScreen(scrollController: searchScrollController),
       CategoriesScreen(scrollController: categoriesScrollController),
       const RadioScreen(),
     ];

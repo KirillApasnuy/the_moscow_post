@@ -2,23 +2,33 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:jumping_dot/jumping_dot.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 import 'package:the_moscow_post/common/widgets/news/news_card/first_news_card_horizontal.dart';
 import 'package:the_moscow_post/common/widgets/news/news_card/news_card_horizontal.dart';
 import 'package:the_moscow_post/data/controllers/news_controller.dart';
+import 'package:the_moscow_post/data/controllers/pages_controller.dart';
+import 'package:the_moscow_post/data/models/pages.dart';
 import 'package:the_moscow_post/data/repositories/repository.dart';
-import 'package:the_moscow_post/navigation_menus.dart';
-import 'package:the_moscow_post/screens/news_details/news_details.dart';
+import 'package:the_moscow_post/screens/details/news_details.dart';
+import 'package:the_moscow_post/screens/details/news_details_push.dart';
 import 'package:the_moscow_post/utils/constans/colors.dart';
 import 'package:the_moscow_post/utils/constans/strings.dart';
 
 import '../data/models/news.dart';
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  if (message.notification != null) {
+    print(
+        "notification"); // Используйте Local Notifications для отображения уведомлений
+    // (вам нужно будет создать и настроить функцию showNotification())
+    // await showNotification(message);
+  }
+}
 
 class HomeScreen extends StatefulWidget {
   final ScrollController scrollController;
@@ -33,6 +43,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<SideMenuState> sideMenuKey = GlobalKey<SideMenuState>();
 
   NewsController newsController = NewsController(Repository());
+  PagesController pagesController = PagesController(Repository());
+  List<Pages> listPage = [];
   bool isPopularSort = false;
   int page = 0;
   List<News> _listNews = [];
@@ -51,7 +63,33 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      print("onMessage: $message");
+      openAppPush(message);
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      print("OnMessageOpenedApp:    ${message.notification!.title}");
+      openAppPush(message);
+    });
     allRubric();
+  }
+
+  void openAppPush(RemoteMessage message) {
+    setState(() {
+      if (message.notification?.title != null) {
+        newsController
+            .fetchNewsSearchList(message.notification!.title!)
+            .then((_pushNewsList) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return NewsDetailsPush(
+              news: _pushNewsList[0],
+            );
+          }));
+          // print("f");
+        });
+      }
+    });
   }
 
   @override
@@ -529,12 +567,8 @@ class _HomeScreenState extends State<HomeScreen> {
     newsController.fetchNewsList().then((listNews) {
       _filterRubricId.clear();
 
-      // Ищем новость с news.day == 1
-      News? firstNews = listNews.firstWhere(
-        (news) => news.day == 1, // Если не найдено, то возвращаем null
-      );
+      News? firstNews = listNews[0];
 
-      // Добавляем все новости в список, кроме найденной
       _listNews.addAll(listNews.where((news) => news != firstNews));
 
       _listNews.insert(0, firstNews);
@@ -622,5 +656,12 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       });
     }
+  }
+
+  void checkPageController() {
+    pagesController.fetchPageList().then((_listPage) {
+      listPage.addAll(_listPage);
+      print(listPage[0].title);
+    });
   }
 }

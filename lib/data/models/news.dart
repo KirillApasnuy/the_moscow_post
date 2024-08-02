@@ -13,6 +13,7 @@ class News {
   final int day;
   final bool viewCountDisplay;
   final String serverHost;
+  final bool topMenuOn;
   const News({required this.author,
     required this.id,
     required this.rubricName,
@@ -27,16 +28,17 @@ class News {
     required this.day,
     required this.viewCountDisplay,
     required this.serverHost,
+    required this.topMenuOn,
   });
 
-  factory News.fromJson(Map<dynamic, dynamic> json, viewCountDisplay, serverHost) {
+  factory News.fromJson(Map<dynamic, dynamic> json, viewCountDisplay, serverHost, topMenuOn) {
     return News(
       id: json["id"] ?? 0 as int,
       rubricName: json["rubric_name"]?? "",
       rubricId: json["rubric_id"] ?? 0 as int ,
       title: json["title"] ?? "",
       description: json["description"] ?? "",
-      mediumImageTitleUrl: "http://$serverHost${json["medium_image_src"]}" ?? "url null",
+      mediumImageTitleUrl: "http://$serverHost${json["small_image_src"]}" ?? "url null",
       updateDateTime: DateTime.parse(json["create_datetime"]),
       viewsCount: json["views_count"] ?? 0 as int,
       text: json["text"] ?? "",
@@ -45,6 +47,7 @@ class News {
       day: json["day"] ?? 0 as int,
       viewCountDisplay: viewCountDisplay,
       serverHost: serverHost,
+      topMenuOn: topMenuOn,
     );
   }
 

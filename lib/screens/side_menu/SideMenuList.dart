@@ -1,52 +1,97 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
+import 'package:the_moscow_post/controllers/context/context_controller.dart';
+import 'package:the_moscow_post/data/controllers/news_controller.dart';
+import 'package:the_moscow_post/data/controllers/pages_controller.dart';
+import 'package:the_moscow_post/data/models/news.dart';
+import 'package:the_moscow_post/data/models/pages.dart';
+import 'package:the_moscow_post/data/repositories/repository.dart';
+import 'package:the_moscow_post/screens/details/pages_details.dart';
 import 'package:the_moscow_post/utils/constans/colors.dart';
 
-class SideMenuList extends StatelessWidget {
+class SideMenuList extends StatefulWidget {
   final GlobalKey<SideMenuState> menuKey;
-  const SideMenuList({super.key, required this.menuKey} );
+
+  const SideMenuList({Key? key, required this.menuKey}) : super(key: key);
+
+  @override
+  State<SideMenuList> createState() => _SideMenuListState();
+}
+
+class _SideMenuListState extends State<SideMenuList> {
+  PagesController pagesController = PagesController(Repository());
+  List<Pages> listPages = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getAllPages();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ElevatedButton(onPressed: () {
-                viewSideBar();
-              }, child: Text("Политика"), style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  shadowColor: Colors.black,
-                  elevation: 3,
-                  textStyle: const TextStyle(
-                      fontSize: 17,
-                      fontFamily: "montserrat",
-                      fontWeight: FontWeight.w600)),) ,
-              ElevatedButton(onPressed: () {
-                viewSideBar();
-              }, child: Text("В мире")),
-              ElevatedButton(onPressed: () {
-                viewSideBar();
-              }, child: Text("Экономика")),
-              ElevatedButton(onPressed: () {
-                viewSideBar();
-              }, child: Text("Спорт")),
-              ElevatedButton(onPressed: () {
-                viewSideBar();
-              }, child: Text("Общество")),
-            ],
-          )
+    return Container(
+      height: ContextController.getHeightScreen(context) + 250,
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: listPages.length,
+              itemBuilder: (context, index) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+
+                      child: Text(
+                        listPages[index].title,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            fontFamily: "Montserrat",
+                            fontSize: 23,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white),
+                      ),
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                          return PagesDetails(pages: listPages[index]);
+                        }));
+                      },
+                    ),
+                    Container(
+                      height: 1,
+                      width: ContextController.getWidthScreen(context) * 0.6,
+                      color: AppColors.secondary,
+                    )
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
+
+  void getAllPages() {
+    pagesController.fetchPageList().then((_listPages) {
+      if (_listPages.isNotEmpty) {
+        listPages.addAll(_listPages);
+        setState(() {});
+      }
+    }).catchError((error) {
+      print("Error fetching pages: $error");
+    });
+  }
+
   void viewSideBar() {
-    if (menuKey.currentState!.isOpened) {
-      menuKey.currentState!.closeSideMenu();
+    if (widget.menuKey.currentState!.isOpened) {
+      widget.menuKey.currentState!.closeSideMenu();
     } else {
-      menuKey.currentState!.openSideMenu();
+      widget.menuKey.currentState!.openSideMenu();
     }
   }
 }

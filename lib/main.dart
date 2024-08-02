@@ -14,16 +14,7 @@ import 'package:workmanager/workmanager.dart';
 
 import 'app.dart';
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
-  if (message.notification != null) {
-    print(
-        "notification"); // Используйте Local Notifications для отображения уведомлений
-    // (вам нужно будет создать и настроить функцию showNotification())
-    // await showNotification(message);
-  }
-}
+
 
 Future<void> subscribeToTopic(String topic) async {
   await FirebaseMessaging.instance.subscribeToTopic(topic);
@@ -48,7 +39,6 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   subscribeToTopic("allDevices");
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FirebaseController().initNotifications();
   late final PlatformWebViewControllerCreationParams params;
   if (WebViewPlatform.instance is WebKitWebViewPlatform) {

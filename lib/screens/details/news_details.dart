@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:share/share.dart';
 import 'package:the_moscow_post/common/widgets/news/news_card/news_card_horizontal.dart';
 import 'package:the_moscow_post/controllers/context/context_controller.dart';
@@ -35,11 +36,11 @@ class _NewsDetailsState extends State<NewsDetails> {
     // TODO: implement initState
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     bool isPreviewNews = false;
     News? news;
-    print(widget.numberItem);
     if (widget.numberItem > 0 && widget.numberItem <= widget.listNews.length) {
       news = widget.listNews[widget.numberItem - 1];
       isPreviewNews = true;
@@ -50,7 +51,6 @@ class _NewsDetailsState extends State<NewsDetails> {
         isPreviewNews = true;
       });
     }
-    print(widget.listNews[0].title);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(82, 82, 82, 1),
@@ -180,7 +180,7 @@ class _NewsDetailsState extends State<NewsDetails> {
                                   maxLines: 10,
                                   style: const TextStyle(
                                     color: Colors.white,
-                                    fontSize: 20,
+                                    fontSize: 25,
                                     fontFamily: "montserrat",
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -236,7 +236,7 @@ class _NewsDetailsState extends State<NewsDetails> {
                     Text(
                       EditText.removeHtmlTag(widget.news.description),
                       style: const TextStyle(
-                        fontSize: 20,
+                        fontSize: 25,
                         fontFamily: "open_sans",
                         fontWeight: FontWeight.w800,
                       ),
@@ -246,22 +246,39 @@ class _NewsDetailsState extends State<NewsDetails> {
                       data: EditText.addHttpInUri(widget.news.text),
                       style: {
                         "h1": Style(
-                          fontSize: FontSize.xSmall,
+                          fontSize: FontSize.xLarge,
                           fontFamily: "open_sans",
                           fontWeight: FontWeight.w600,
                         ),
                         "p": Style(
-                          fontSize: FontSize.medium,
+                          fontSize: FontSize.xLarge,
                           fontFamily: "open_sans",
                           fontWeight: FontWeight.normal,
                         ),
-
                       },
                       onLinkTap: (url, _, __) {
                         printInfo(info: url!);
                         _launchURL(url);
                       },
+                      extensions: [
+                        TagExtension(
+                          tagsToExtend: {"img"},
+                          builder: (extensionContext) {
+                            final attributes = extensionContext.attributes;
+                            final src = attributes['src'];
+                            if (src == null) return const SizedBox();
 
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                  return FullScreenImage(src: src);
+                                }));
+                              },
+                              child: Image.network(src),
+                            );
+                          },
+                        ),
+                      ],
                     ),
                     const SizedBox(
                       height: 20,
@@ -330,5 +347,79 @@ class _NewsDetailsState extends State<NewsDetails> {
     }
     //   throw 'Could not launch $url';
     // }
+  }
+}
+class FullScreenImage extends StatelessWidget {
+  final String src;
+
+  const FullScreenImage({super.key, required this.src});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromRGBO(82, 82, 82, 1),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            size: 35,
+            color: AppColors.secondary,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/images/world.png"),
+              fit: BoxFit.cover,
+            ),
+          ),
+          height: kToolbarHeight,
+          width: 330,
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    Strings.appBarTitle,
+                    style: TextStyle(
+                      color: Color.fromRGBO(76, 71, 29, 100.0),
+                      fontFamily: "Montserrat",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                  Text(
+                    Strings.appBarTagline,
+                    style: TextStyle(
+                      color: Color.fromRGBO(0, 0, 0, 1),
+                      fontFamily: "Montserrat",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          SizedBox(
+            width: 50,
+          )
+        ],
+      ),
+      body: PhotoView(
+        imageProvider: NetworkImage(src),
+        backgroundDecoration: const BoxDecoration(
+          color: AppColors.secondary,
+        ),
+      ),
+    );
   }
 }

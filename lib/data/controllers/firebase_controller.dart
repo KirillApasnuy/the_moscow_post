@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:the_moscow_post/data/controllers/news_controller.dart';
 import 'package:the_moscow_post/data/models/news.dart';
 import 'package:the_moscow_post/data/repositories/repository.dart';
-import 'package:the_moscow_post/screens/news_details/news_details.dart';
+import 'package:the_moscow_post/screens/details/news_details.dart';
 
 class FirebaseController {
   late String token;

@@ -26,7 +26,15 @@ class NewsController {
     return _repository.getNewsSearchList(search);
   }
 
+  Future<List<News>> fetchMoreNewsSearchList(String search, int page) async {
+    return _repository.getMoreNewsSearchList(search, page);
+  }
+
   Future<News> fetchNewsId(int id) async {
     return _repository.getNewsId(id);
+  }
+
+  Future<News> fetchNewsHour() async {
+    return _repository.getNewsHour();
   }
 }

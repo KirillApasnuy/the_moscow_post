@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:jumping_dot/jumping_dot.dart';
 import 'package:the_moscow_post/data/controllers/news_controller.dart';
 import 'package:the_moscow_post/data/repositories/repository.dart';
 import 'package:the_moscow_post/utils/constans/colors.dart';
@@ -10,8 +11,8 @@ import '../data/models/news.dart';
 import '../utils/constans/strings.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
-
+  const SearchScreen({super.key, required this.scrollController});
+  final ScrollController scrollController;
   @override
   State<SearchScreen> createState() => _SearchScreenState();
 }
@@ -21,10 +22,25 @@ class _SearchScreenState extends State<SearchScreen> {
   List<News> _listNews = [];
   final _textController = TextEditingController();
   bool isLoading = false;
+  int page = 0;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    widget.scrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    widget.scrollController.removeListener(_scrollListener);
   }
 
   @override
@@ -110,10 +126,22 @@ class _SearchScreenState extends State<SearchScreen> {
                   :
                    Expanded(
                       child: ListView.builder(
+                        controller: widget.scrollController,
                         itemCount: _listNews.length,
                         itemBuilder: (context, index) {
                           News news = _listNews[index];
-                          return AppNewsCardHorizontal(
+                          return index == _listNews.length - 1
+                          ? Padding(
+                          padding: const EdgeInsets.all(5),
+                          child: JumpingDots(
+                          color: AppColors.primary,
+                          radius: 7,
+                          numberOfDots: 3,
+                          animationDuration:
+                          const Duration(milliseconds: 220),
+                          verticalOffset: -4,
+                          ),
+                          ) : AppNewsCardHorizontal(
                             news: news,
                             numberItem: index,
                             listNews: _listNews,
@@ -146,4 +174,19 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
+  void _scrollListener() {
+    if (widget.scrollController.position.pixels >=
+          widget.scrollController.position.maxScrollExtent - 200) {
+      setState(() {
+        page++;
+        newsController.fetchMoreNewsSearchList(_textController.text, page).then((listNews) {
+          setState(() {
+            _listNews.addAll(listNews);
+            Set<News> uniqueNews = _listNews.toSet();
+            _listNews = uniqueNews.toList();
+          });
+        });
+      });
+    }
+  }
 }

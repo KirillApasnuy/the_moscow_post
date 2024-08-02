@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jumping_dot/jumping_dot.dart';
@@ -7,6 +8,7 @@ import 'package:the_moscow_post/common/widgets/news/NewsCategorySeparator.dart';
 import 'package:the_moscow_post/common/widgets/news/news_card/news_card_horizontal.dart';
 import 'package:the_moscow_post/data/controllers/news_controller.dart';
 import 'package:the_moscow_post/data/repositories/repository.dart';
+import 'package:the_moscow_post/screens/details/pages_details.dart';
 import 'package:the_moscow_post/utils/constans/colors.dart';
 
 import '../data/models/news.dart';
@@ -29,12 +31,17 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   int page = 0;
   bool isLoading = true;
   bool isFail = false;
+  int countHandleBackBtn = 0;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     allRubric();
+    countHandleBackBtn = 0;
+    setState(() {
+
+    });
   }
 
   @override
@@ -52,10 +59,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   }
 
   void selectRubric(int rubricId) {
+    countHandleBackBtn--;
     isLoading = true;
-    setState(() {
-
-    });
+    setState(() {});
     if (!mounted) return; // Проверьте, находится ли состояние в контексте.
     _listNews.clear();
     newsController.fetchNewsRubricNameList(rubricId).then((listNews) {
@@ -68,11 +74,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           0.0,
           duration: const Duration(seconds: 1),
           curve: Curves.easeInOut,
-        );// Устанавливаем состояние
+        ); // Устанавливаем состояние
       });
       isLoading = false;
-      setState(() {
-      });
+      setState(() {});
     }).catchError((error) {
       isLoading = false;
       isFail = true;
@@ -98,167 +103,213 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           setState(() {
             listNews.take(5).forEach((newsItem) {
               if (!_listNews.contains(newsItem)) {
-                _listNews.add(newsItem); // Добавление только уникальных новостей
+                _listNews
+                    .add(newsItem); // Добавление только уникальных новостей
               }
             });
           });
         }).catchError((ex) {
-          if (!mounted) return; // Проверка перед изменением состояния
+          if (!mounted) return;
+          print("error"); // Проверка перед изменением состояния
           isLoading = false;
           isFail = true;
           setState(() {});
         })));
   }
+
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-        color: AppColors.primary,
-        onRefresh: () async {
-          // initState();
+    return WillPopScope(
+        onWillPop: () async {
+          countHandleBackBtn++;
+          print("saf");
+          if (countHandleBackBtn == 2) {
+            return true;
+          }
           allRubric();
-          await Future.delayed(const Duration(seconds: 2));
-        },
-        child: Scaffold(
-            body: Container(
-          color: AppColors.primaryBackground,
-          width: window.physicalSize.width,
-          child: isLoading
-              ? const Column(
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Container(
+                height: 90,
+                decoration: BoxDecoration(
+                    color: AppColors.secondary,
+                    borderRadius:
+                    BorderRadius.all(Radius.circular(10))),
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(
-                      height: 200,
-                    ),
-                    CircularProgressIndicator(
-                      color: AppColors.primary,
+                    Text(
+                      "Для выхода из приложения, нажимите кнопку \"назад\" ещё раз.",
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: "montserrat",
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary),
                     )
                   ],
-                )
-              : isFail
-                  ? Center(
-                      child: ListView(
-                        children: [
-                          Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                const SizedBox(
-                                  height: 200,
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.all(20),
-                                  child: Text(
-                                    textAlign: TextAlign.center,
-                                    "Произошла ошибка, проверьте подключение к интернету.",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontFamily: "montserrat",
-                                        color: AppColors.primary,
-                                        fontSize: 20),
-                                  ),
-                                ),
-                                JumpingDots(
-                                  color: AppColors.primary,
-                                  radius: 7,
-                                  numberOfDots: 3,
-                                  animationDuration:
-                                      const Duration(milliseconds: 220),
-                                  verticalOffset: -4,
-                                ),
-                              ])
-                        ],
-                      ),
-                    )
-                  : Column(
+                ),
+              ),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+            ),
+          );
+          setState(() {
+
+          });
+          return false;
+        },
+        child: RefreshIndicator(
+            color: AppColors.primary,
+            onRefresh: () async {
+              // initState();
+              allRubric();
+              await Future.delayed(const Duration(seconds: 2));
+            },
+            child: Scaffold(
+                body: Container(
+              color: AppColors.primaryBackground,
+              width: window.physicalSize.width,
+              child: isLoading
+                  ? const Column(
                       children: [
-                        Expanded(
-                            child: ListView.builder(
-                                controller: widget.scrollController,
-                                itemCount: _listNews.length ?? 0,
-                                itemBuilder: (context, index) {
-                                  News news = _listNews[index];
-                                  if (isSelectCategory) {
-                                    if (index == 0) {
-                                      return NewsCategorySeparator(
-                                          title: news.rubricName,
-                                          function: () {
-                                            allRubric();
-                                          });
-                                    }
-                                    return Column(
-                                      children: [
-                                        AppNewsCardHorizontal(
+                        SizedBox(
+                          height: 200,
+                        ),
+                        CircularProgressIndicator(
+                          color: AppColors.primary,
+                        )
+                      ],
+                    )
+                  : isFail
+                      ? Center(
+                          child: ListView(
+                            children: [
+                              Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    const SizedBox(
+                                      height: 200,
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(20),
+                                      child: Text(
+                                        textAlign: TextAlign.center,
+                                        "Произошла ошибка, проверьте подключение к интернету.",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w700,
+                                            fontFamily: "montserrat",
+                                            color: AppColors.primary,
+                                            fontSize: 20),
+                                      ),
+                                    ),
+                                    JumpingDots(
+                                      color: AppColors.primary,
+                                      radius: 7,
+                                      numberOfDots: 3,
+                                      animationDuration:
+                                          const Duration(milliseconds: 220),
+                                      verticalOffset: -4,
+                                    ),
+                                  ])
+                            ],
+                          ),
+                        )
+                      : Column(
+                          children: [
+                            Expanded(
+                                child: ListView.builder(
+                                    controller: widget.scrollController,
+                                    itemCount: _listNews.length ?? 0,
+                                    itemBuilder: (context, index) {
+                                      News news = _listNews[index];
+                                      if (isSelectCategory) {
+                                        if (index == 0) {
+                                          return NewsCategorySeparator(
+                                              title: news.rubricName,
+                                              function: () {
+                                                allRubric();
+                                              });
+                                        }
+                                        return Column(
+                                          children: [
+                                            AppNewsCardHorizontal(
+                                              news: news,
+                                              numberItem: index,
+                                              listNews: _listNews,
+                                            ),
+                                            index == _listNews.length - 1
+                                                ? JumpingDots(
+                                                    color: AppColors.primary,
+                                                    radius: 7,
+                                                    numberOfDots: 3,
+                                                    animationDuration:
+                                                        const Duration(
+                                                            milliseconds: 220),
+                                                    verticalOffset: -4,
+                                                  )
+                                                : Stack(),
+                                          ],
+                                        );
+                                      } else {
+                                        if (index == 0) {
+                                          return NewsCategorySeparator(
+                                            function: () {
+                                              selectRubric(news.rubricId);
+                                            },
+                                            title: news.rubricName,
+                                          );
+                                        } else if (index == 5) {
+                                          return NewsCategorySeparator(
+                                            function: () {
+                                              selectRubric(news.rubricId);
+                                            },
+                                            title: news.rubricName,
+                                          );
+                                        } else if (index == 10) {
+                                          return NewsCategorySeparator(
+                                            function: () {
+                                              selectRubric(news.rubricId);
+                                            },
+                                            title: news.rubricName,
+                                          );
+                                        } else if (index == 15) {
+                                          return NewsCategorySeparator(
+                                            function: () {
+                                              selectRubric(news.rubricId);
+                                            },
+                                            title: news.rubricName,
+                                          );
+                                        } else if (index == 20) {
+                                          return NewsCategorySeparator(
+                                            function: () {
+                                              selectRubric(news.rubricId);
+                                            },
+                                            title: news.rubricName,
+                                          );
+                                        } else if (index == 25) {
+                                          return NewsCategorySeparator(
+                                            function: () {
+                                              selectRubric(news.rubricId);
+                                            },
+                                            title: news.rubricName,
+                                          );
+                                        }
+                                        // print(news.rubricName);
+                                        return AppNewsCardHorizontal(
                                           news: news,
                                           numberItem: index,
                                           listNews: _listNews,
-                                        ),
-                                        index == _listNews.length - 1
-                                            ? JumpingDots(
-                                          color: AppColors.primary,
-                                          radius: 7,
-                                          numberOfDots: 3,
-                                          animationDuration:
-                                          const Duration(milliseconds: 220),
-                                          verticalOffset: -4,
-                                        ): Stack(),
-                                      ],
-                                    );
-                                  } else {
-                                    if (index == 0) {
-                                      return NewsCategorySeparator(
-                                        function: () {
-                                          selectRubric(news.rubricId);
-                                        },
-                                        title: news.rubricName,
-                                      );
-                                    } else if (index == 5) {
-                                      return NewsCategorySeparator(
-                                        function: () {
-                                          selectRubric(news.rubricId);
-                                        },
-                                        title: news.rubricName,
-                                      );
-                                    } else if (index == 10) {
-                                      return NewsCategorySeparator(
-                                        function: () {
-                                          selectRubric(news.rubricId);
-                                        },
-                                        title: news.rubricName,
-                                      );
-                                    } else if (index == 15) {
-                                      return NewsCategorySeparator(
-                                        function: () {
-                                          selectRubric(news.rubricId);
-                                        },
-                                        title: news.rubricName,
-                                      );
-                                    } else if (index == 20) {
-                                      return NewsCategorySeparator(
-                                        function: () {
-                                          selectRubric(news.rubricId);
-                                        },
-                                        title: news.rubricName,
-                                      );
-                                    } else if (index == 25) {
-                                      return NewsCategorySeparator(
-                                        function: () {
-                                          selectRubric(news.rubricId);
-                                        },
-                                        title: news.rubricName,
-                                      );
-                                    }
-                                    // print(news.rubricName);
-                                    return
-                                      AppNewsCardHorizontal(
-                                      news: news,
-                                      numberItem: index,
-                                      listNews: _listNews,
-
-                                    );
-                                  }
-                                }))
-                      ],
-                    ),
-        )));
+                                        );
+                                      }
+                                    }))
+                          ],
+                        ),
+            ))));
   }
 
   void _scrollListener() {

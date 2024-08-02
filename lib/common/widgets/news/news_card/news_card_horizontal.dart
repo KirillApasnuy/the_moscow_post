@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:the_moscow_post/controllers/context/context_controller.dart';
 import 'package:the_moscow_post/data/models/news.dart';
-import 'package:the_moscow_post/screens/news_details/news_details.dart';
+import 'package:the_moscow_post/screens/details/news_details.dart';
 import 'package:the_moscow_post/utils/constans/colors.dart';
 import 'package:the_moscow_post/utils/constans/edit_text.dart';
 import 'package:the_moscow_post/utils/constans/strings.dart';
