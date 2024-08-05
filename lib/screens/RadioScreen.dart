@@ -44,6 +44,7 @@ class _RadioScreenState extends State<RadioScreen> {
   @override
   Widget build(BuildContext context) {
     double columnWidth = (ContextController.getWidthScreen(context) * 0.16 - 2);
+    double columnHeight = (ContextController.getHeightScreen(context) * 0.5 - 2);
     return Container(
       width: window.physicalSize.width,
       height: window.physicalSize.height,
@@ -63,7 +64,7 @@ class _RadioScreenState extends State<RadioScreen> {
                     MiniMusicVisualizer(
                       color: AppColors.accent.withOpacity(0.5),
                       width: columnWidth,
-                      height: 250,
+                      height: columnHeight,
                       radius: 15,
                       animate: isPlaying,
                     ),
@@ -72,7 +73,7 @@ class _RadioScreenState extends State<RadioScreen> {
                       child: MiniMusicVisualizer(
                         color: AppColors.accent.withOpacity(0.5),
                         width: columnWidth,
-                        height: 250,
+                        height: columnHeight,
                         radius: 15,
                         animate: isPlaying,
                       ),
@@ -87,7 +88,7 @@ class _RadioScreenState extends State<RadioScreen> {
                     MiniMusicVisualizer(
                       color: AppColors.accent.withOpacity(0.5),
                       width: columnWidth,
-                      height: 250,
+                      height: columnHeight,
                       radius: 15,
                       animate: isPlaying,
                     ),
@@ -96,7 +97,7 @@ class _RadioScreenState extends State<RadioScreen> {
                       child: MiniMusicVisualizer(
                         color: AppColors.accent.withOpacity(0.5),
                         width: columnWidth,
-                        height: 250,
+                        height: columnHeight,
                         radius: 15,
                         animate: isPlaying,
                       ),

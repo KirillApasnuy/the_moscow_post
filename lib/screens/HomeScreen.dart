@@ -4,6 +4,8 @@ import 'dart:ui';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:jumping_dot/jumping_dot.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 import 'package:the_moscow_post/common/widgets/news/news_card/first_news_card_horizontal.dart';
@@ -20,20 +22,49 @@ import 'package:the_moscow_post/utils/constans/strings.dart';
 import '../data/models/news.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
+  await Firebase.initializeApp();
+    // Настройка локальных уведомлений
+  const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    'high_importance_channel', // id
+    'High Importance Notifications', // name
+    importance: Importance.high,
+  );
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin();
+
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+      AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+
   if (message.notification != null) {
-    print(
-        "notification"); // Используйте Local Notifications для отображения уведомлений
-    // (вам нужно будет создать и настроить функцию showNotification())
-    // await showNotification(message);
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+      'high_importance_channel', // id
+      'High Importance Notifications', // name
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: true,
+    );
+
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+      message.notification.hashCode,
+      message.notification!.title,
+      message.notification!.body,
+      platformChannelSpecifics,
+    );
   }
 }
 
 class HomeScreen extends StatefulWidget {
   final ScrollController scrollController;
 
-  HomeScreen({super.key, required this.scrollController});
+  const HomeScreen({super.key, required this.scrollController});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -66,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       print("onMessage: $message");
-      openAppPush(message);
+      // openAppPush(message);
     });
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
       print("OnMessageOpenedApp:    ${message.notification!.title}");
