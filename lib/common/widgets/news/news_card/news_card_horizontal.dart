@@ -65,10 +65,10 @@ class AppNewsCardHorizontal extends StatelessWidget {
                     bottomLeft: Radius.circular(10)),
               ),
               child: Image.network(
-                news.mediumImageTitleUrl,
+                news.smallImageSrc,
                 errorBuilder: (context, error, stackTrace) {
                   printError(
-                      info: "Uri not found: ${news.mediumImageTitleUrl}");
+                      info: "Uri not found: ${news.smallImageSrc}");
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,

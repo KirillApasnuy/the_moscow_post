@@ -85,36 +85,42 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     });
   }
 
-  void allRubric() {
-    isLoading = true;
-    isFail = false;
-    if (!mounted) return; // Проверка перед изменением состояния
+  void allRubric() async{
     setState(() {
-      _listNews.clear();
-      isSelectCategory = false;
-      selectRubricId = -1;
-      page = 0; // Сброс состояния
+      isLoading = true;
+      isFail = false;
     });
 
-    Future.wait(rubricIdList.map((rubricId) =>
-        newsController.fetchNewsRubricNameList(rubricId).then((listNews) {
-          if (!mounted) return; // Проверка перед изменением состояния
-          isLoading = false;
-          setState(() {
-            listNews.take(5).forEach((newsItem) {
-              if (!_listNews.contains(newsItem)) {
-                _listNews
-                    .add(newsItem); // Добавление только уникальных новостей
-              }
-            });
-          });
-        }).catchError((ex) {
-          if (!mounted) return;
-          print("error"); // Проверка перед изменением состояния
-          isLoading = false;
-          isFail = true;
-          setState(() {});
-        })));
+    try {
+      // Список будущих новостей
+      List<Future<List<News>>> futures = rubricIdList.map((rubricId) {
+        return newsController.fetchNewsRubricNameList(rubricId);
+      }).toList();
+
+      // Ожидание завершения всех будущих
+      List<List<News>> results = await Future.wait(futures);
+
+      if (!mounted) return; // Проверка перед изменением состояния
+
+      setState(() {
+        _listNews.clear();
+        for (var newsList in results) {
+          for (var newsItem in newsList.take(5)) {
+            if (!_listNews.contains(newsItem)) {
+              _listNews.add(newsItem); // Добавление только уникальных новостей
+            }
+          }
+        }
+        isLoading = false;
+      });
+    } catch (ex) {
+      if (!mounted) return;
+      print("error: $ex"); // Проверка перед изменением состояния
+      setState(() {
+        isLoading = false;
+        isFail = true;
+      });
+    }
   }
 
   @override

@@ -119,7 +119,7 @@ class _NewsDetailsPushState extends State<NewsDetailsPush> {
                             decoration: BoxDecoration(
                               image: DecorationImage(
                                 image:
-                                NetworkImage(widget.news.mediumImageTitleUrl),
+                                NetworkImage(widget.news.mediumImageSrc),
                                 fit: BoxFit.cover,
                               ),
                             ),

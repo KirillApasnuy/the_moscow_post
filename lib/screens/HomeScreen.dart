@@ -236,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           child: FirstNewsCardHorizontal(
                                             title: news.title,
                                             mediumImageTitleUrl:
-                                                news.mediumImageTitleUrl,
+                                                news.smallImageSrc,
                                           ),
                                         ),
                                         SingleChildScrollView(

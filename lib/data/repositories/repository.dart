@@ -91,6 +91,7 @@ class Repository {
     var response = await http.get(url);
     printInfo(info: "status code: ${response.statusCode}");
     var body = json.decode(response.body)["data"];
+    print(body["id"]);
     News news = News.fromJson(body, json.decode(response.body)["view_count_display"] == "true" ? true : false, json.decode(response.body)["serverHost"], json.decode(response.body)["topMenu_on"] == "true" ? true : false);
     return news;
   }
