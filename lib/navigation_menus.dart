@@ -2,6 +2,7 @@ import "package:firebase_core/firebase_core.dart";
 import "package:firebase_messaging/firebase_messaging.dart";
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
+import "package:flutter_local_notifications/flutter_local_notifications.dart";
 import "package:get/get.dart";
 import "package:iconsax/iconsax.dart";
 import "package:shrink_sidemenu/shrink_sidemenu.dart";
@@ -11,9 +12,50 @@ import "package:the_moscow_post/screens/CategoriesScreen.dart";
 import "package:the_moscow_post/screens/HomeScreen.dart";
 import "package:the_moscow_post/screens/RadioScreen.dart";
 import "package:the_moscow_post/screens/SearchScreen.dart";
+import "package:the_moscow_post/screens/details/news_details_push.dart";
 import "package:the_moscow_post/screens/side_menu/SideMenuList.dart";
 import "package:the_moscow_post/utils/constans/colors.dart";
 import "package:the_moscow_post/utils/constans/strings.dart";
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  // Настройка локальных уведомлений
+  const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    'high_importance_channel', // id
+    'High Importance Notifications', // name
+    importance: Importance.high,
+  );
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin();
+
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+      AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+
+  if (message.notification != null) {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+      'high_importance_channel', // id
+      'High Importance Notifications', // name
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: true,
+    );
+
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+      message.notification.hashCode,
+      message.notification!.title,
+      message.notification!.body,
+      platformChannelSpecifics,
+    );
+  }
+}
 
 class NavigationMenu extends StatefulWidget {
   const NavigationMenu({super.key});
@@ -27,6 +69,25 @@ class _NavigationMenuState extends State<NavigationMenu> {
   final NavigationController controller = Get.put(NavigationController());
   NewsController newsController = NewsController(Repository());
   bool topMenuOn = false;
+
+  Future<void> setupInteractedMessage() async {
+    // Get any messages which caused the application to open from
+    // a terminated state.
+    RemoteMessage? initialMessage =
+    await FirebaseMessaging.instance.getInitialMessage();
+
+    // If the message also contains a data property with a "type" of "chat",
+    // navigate to a chat screen
+    if (initialMessage != null) {
+      openAppPush(initialMessage);
+    }
+
+    // Also handle any interaction when the app is in the background via a
+    // Stream listener
+    FirebaseMessaging.onMessageOpenedApp.listen(openAppPush);
+  }
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -40,11 +101,47 @@ class _NavigationMenuState extends State<NavigationMenu> {
         // Отправка уведомления через Local Notifications
       }
     });
+    var _messaging = FirebaseMessaging.instance;
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      print("onMessage: $message");
+      // openAppPush(message);
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      print("OnMessageOpenedApp:    ${message.notification!.title}");
+      print("OnMessageOpenedApp: ${message.data["id"]}");
+      openAppPush(message);
+    });
+    _messaging.getInitialMessage().then((RemoteMessage? message){
+      if (message != null) {
+        _firebaseMessagingBackgroundHandler(message);
+      }
+    });
+
+    setupInteractedMessage();
     setStateTopMenu();
     setState(() {
 
     });
   }
+  void openAppPush(RemoteMessage message) {
+    setState(() {
+      if (message.notification?.title != null) {
+        newsController
+            .fetchNewsId(int.parse(message.data["newsId"]))
+            .then((news){
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return NewsDetailsPush(
+              news: news,
+            );
+          }));
+        }).catchError((err) {
+          print("error: $err");
+        });
+      }
+    });
+  }
+
   void setStateTopMenu() {
     newsController.fetchNewsList().then((_listNews) {
       topMenuOn = _listNews[0].topMenuOn;

@@ -21,45 +21,6 @@ import 'package:the_moscow_post/utils/constans/strings.dart';
 
 import '../data/models/news.dart';
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-    // Настройка локальных уведомлений
-  const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'high_importance_channel', // id
-    'High Importance Notifications', // name
-    importance: Importance.high,
-  );
-
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
-
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-      AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
-
-  if (message.notification != null) {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
-      'high_importance_channel', // id
-      'High Importance Notifications', // name
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: true,
-    );
-
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
-    );
-
-    await flutterLocalNotificationsPlugin.show(
-      message.notification.hashCode,
-      message.notification!.title,
-      message.notification!.body,
-      platformChannelSpecifics,
-    );
-  }
-}
 
 class HomeScreen extends StatefulWidget {
   final ScrollController scrollController;
@@ -72,7 +33,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<SideMenuState> sideMenuKey = GlobalKey<SideMenuState>();
-
   NewsController newsController = NewsController(Repository());
   PagesController pagesController = PagesController(Repository());
   List<Pages> listPage = [];
@@ -94,34 +54,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      print("onMessage: $message");
-      // openAppPush(message);
-    });
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-      print("OnMessageOpenedApp:    ${message.notification!.title}");
-      openAppPush(message);
-    });
     allRubric();
   }
 
-  void openAppPush(RemoteMessage message) {
-    setState(() {
-      if (message.notification?.title != null) {
-        newsController
-            .fetchNewsSearchList(message.notification!.title!)
-            .then((_pushNewsList) {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return NewsDetailsPush(
-              news: _pushNewsList[0],
-            );
-          }));
-          // print("f");
-        });
-      }
-    });
-  }
 
   @override
   void didChangeDependencies() {
