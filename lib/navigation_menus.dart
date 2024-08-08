@@ -137,6 +137,35 @@ class _NavigationMenuState extends State<NavigationMenu> {
           }));
         }).catchError((err) {
           print("error: $err");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Container(
+                height: 90,
+                decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius:
+                    BorderRadius.all(Radius.circular(10))),
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Возникла ошибка при загруке",
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: "montserrat",
+                          fontWeight: FontWeight.w600),
+                    )
+                  ],
+                ),
+              ),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+            ),
+          );
         });
       }
     });

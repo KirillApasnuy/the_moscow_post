@@ -41,25 +41,31 @@ class _SideMenuListState extends State<SideMenuList> {
               itemCount: listPages.length,
               itemBuilder: (context, index) {
                 return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    GestureDetector(
-
-                      child: Text(
-                        listPages[index].title,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                            fontFamily: "Montserrat",
-                            fontSize: 23,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white),
-                      ),
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) {
-                          return PagesDetails(pages: listPages[index]);
-                        }));
-                      },
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(width: 25,),
+                        GestureDetector(
+                          child: Text(
+                            listPages[index].title,
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(
+                                fontFamily: "Montserrat",
+                                fontSize: 23,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white),
+                          ),
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) {
+                              return PagesDetails(pages: listPages[index]);
+                            }));
+                          },
+                        ),
+                      ],
                     ),
                     Container(
                       height: 1,
