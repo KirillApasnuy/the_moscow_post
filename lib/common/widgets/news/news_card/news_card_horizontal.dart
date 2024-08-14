@@ -1,15 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:the_moscow_post/controllers/context/context_controller.dart';
-import 'package:the_moscow_post/data/models/news.dart';
-import 'package:the_moscow_post/screens/details/news_details.dart';
-import 'package:the_moscow_post/utils/constans/colors.dart';
-import 'package:the_moscow_post/utils/constans/edit_text.dart';
-import 'package:the_moscow_post/utils/constans/strings.dart';
+import "package:flutter/material.dart";
+import "package:get/get.dart";
+import "package:the_moscow_post/controllers/context/context_controller.dart";
+import "package:the_moscow_post/data/models/news.dart";
+import "package:the_moscow_post/screens/details/news_details.dart";
+import "package:the_moscow_post/utils/constants/colors.dart";
+import "package:the_moscow_post/utils/constants/edit_text.dart";
 
-class AppNewsCardHorizontal extends StatelessWidget {
-  AppNewsCardHorizontal({
+class NewsCardHorizontal extends StatelessWidget {
+  NewsCardHorizontal({
     required this.news,
     super.key,
     required this.listNews,
@@ -67,8 +65,7 @@ class AppNewsCardHorizontal extends StatelessWidget {
               child: Image.network(
                 news.smallImageSrc,
                 errorBuilder: (context, error, stackTrace) {
-                  printError(
-                      info: "Uri not found: ${news.smallImageSrc}");
+                  printError(info: "Uri not found: ${news.smallImageSrc}");
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -77,7 +74,9 @@ class AppNewsCardHorizontal extends StatelessWidget {
                         padding: const EdgeInsets.all(50),
                         height: height,
                         width: height,
-                        child: const CircularProgressIndicator(color: AppColors.primary,),
+                        child: const CircularProgressIndicator(
+                          color: AppColors.primary,
+                        ),
                       ),
                     ],
                   );
@@ -118,38 +117,39 @@ class AppNewsCardHorizontal extends StatelessWidget {
                               const SizedBox(
                                 width: 5,
                               ),
-                              news.viewCountDisplay ?
-                              Row(
-                                children: [
-                                  Text(
-                                    news.viewsCount.toString(),
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      color: AppColors.primary,
+                              news.viewCountDisplay
+                                  ? Row(
+                                      children: [
+                                        Text(
+                                          news.viewsCount.toString(),
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                            color: AppColors.primary,
+                                          ),
+                                        ),
+                                        const Icon(
+                                          Icons.remove_red_eye_outlined,
+                                          size: 15,
+                                          color: AppColors.primary,
+                                        )
+                                      ],
+                                    )
+                                  : Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.library_books_outlined,
+                                          size: 15,
+                                          color: AppColors.primary,
+                                        ),
+                                        Text(
+                                          "${news.rubricName.toString()}",
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                            color: AppColors.primary,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  const Icon(
-                                    Icons.remove_red_eye_outlined,
-                                    size: 15,
-                                    color: AppColors.primary,
-                                  )
-                                ],
-                              ): Row(
-                                children: [
-                                  const Icon(
-                                    Icons.library_books_outlined,
-                                    size: 15,
-                                    color: AppColors.primary,
-                                  ),
-                                  Text(
-                                    "${news.rubricName.toString()}",
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      color: AppColors.primary,
-                                    ),
-                                  ),
-                                ],
-                              ),
                             ],
                           ))
                     ],

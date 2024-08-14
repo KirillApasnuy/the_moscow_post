@@ -1,5 +1,5 @@
-import 'package:the_moscow_post/data/models/news.dart';
-import 'package:the_moscow_post/data/repositories/repository.dart';
+import "package:the_moscow_post/data/models/news.dart";
+import "package:the_moscow_post/data/repositories/repository.dart";
 
 class NewsController {
   final Repository _repository;
@@ -30,7 +30,7 @@ class NewsController {
     return _repository.getMoreNewsSearchList(search, page);
   }
 
-  Future<News> fetchNewsId(int id) async {
+  Future<News> fetchNewsId(String id) async {
     return _repository.getNewsId(id);
   }
 

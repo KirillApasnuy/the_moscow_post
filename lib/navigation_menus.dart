@@ -1,188 +1,103 @@
-import "package:firebase_core/firebase_core.dart";
-import "package:firebase_messaging/firebase_messaging.dart";
-import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
-import "package:flutter_local_notifications/flutter_local_notifications.dart";
 import "package:get/get.dart";
 import "package:iconsax/iconsax.dart";
+import "package:onesignal_flutter/onesignal_flutter.dart";
 import "package:shrink_sidemenu/shrink_sidemenu.dart";
 import "package:the_moscow_post/data/controllers/news_controller.dart";
 import "package:the_moscow_post/data/repositories/repository.dart";
-import "package:the_moscow_post/screens/CategoriesScreen.dart";
-import "package:the_moscow_post/screens/HomeScreen.dart";
-import "package:the_moscow_post/screens/RadioScreen.dart";
-import "package:the_moscow_post/screens/SearchScreen.dart";
+import "package:the_moscow_post/screens/categories_screen.dart";
 import "package:the_moscow_post/screens/details/news_details_push.dart";
-import "package:the_moscow_post/screens/side_menu/SideMenuList.dart";
-import "package:the_moscow_post/utils/constans/colors.dart";
-import "package:the_moscow_post/utils/constans/strings.dart";
-
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  // Настройка локальных уведомлений
-  const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'high_importance_channel', // id
-    'High Importance Notifications', // name
-    importance: Importance.high,
-  );
-
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
-
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-      AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
-
-  if (message.notification != null) {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
-      'high_importance_channel', // id
-      'High Importance Notifications', // name
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: true,
-    );
-
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
-    );
-
-    await flutterLocalNotificationsPlugin.show(
-      message.notification.hashCode,
-      message.notification!.title,
-      message.notification!.body,
-      platformChannelSpecifics,
-    );
-  }
-}
+import "package:the_moscow_post/screens/home_screen.dart";
+import "package:the_moscow_post/screens/radio_screen.dart";
+import "package:the_moscow_post/screens/search_screen.dart";
+import "package:the_moscow_post/screens/side_menu/side_menu_list.dart";
+import "package:the_moscow_post/utils/constants/colors.dart";
+import "package:the_moscow_post/utils/constants/strings.dart";
 
 class NavigationMenu extends StatefulWidget {
   const NavigationMenu({super.key});
+
   @override
   State<NavigationMenu> createState() => _NavigationMenuState();
 }
 
 class _NavigationMenuState extends State<NavigationMenu> {
   final GlobalKey<SideMenuState> sideMenuKey = GlobalKey<SideMenuState>();
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final NavigationController controller = Get.put(NavigationController());
   NewsController newsController = NewsController(Repository());
   bool topMenuOn = false;
-
-  Future<void> setupInteractedMessage() async {
-    // Get any messages which caused the application to open from
-    // a terminated state.
-    RemoteMessage? initialMessage =
-    await FirebaseMessaging.instance.getInitialMessage();
-
-    // If the message also contains a data property with a "type" of "chat",
-    // navigate to a chat screen
-    if (initialMessage != null) {
-      openAppPush(initialMessage);
-    }
-
-    // Also handle any interaction when the app is in the background via a
-    // Stream listener
-    FirebaseMessaging.onMessageOpenedApp.listen(openAppPush);
-  }
-
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _firebaseMessaging.requestPermission();
-
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("Получено сообщение: ${message.notification?.title} ${message.notification?.body}");
-
-      if (message.notification != null) {
-        // Отправка уведомления через Local Notifications
-      }
-    });
-    var _messaging = FirebaseMessaging.instance;
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      print("onMessage: $message");
-      // openAppPush(message);
-    });
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-      print("OnMessageOpenedApp:    ${message.notification!.title}");
-      print("OnMessageOpenedApp: ${message.data["id"]}");
-      openAppPush(message);
-    });
-    _messaging.getInitialMessage().then((RemoteMessage? message){
-      if (message != null) {
-        _firebaseMessagingBackgroundHandler(message);
-      }
-    });
-
-    setupInteractedMessage();
     setStateTopMenu();
-    setState(() {
-
-    });
   }
-  void openAppPush(RemoteMessage message) {
-    setState(() {
-      if (message.notification?.title != null) {
-        newsController
-            .fetchNewsId(int.parse(message.data["newsId"]))
-            .then((news){
+
+  void openAppPush(OSNotificationClickEvent event) {
+    if (event.notification.title != null) {
+      String? newsId = event.notification.additionalData?["newsId"];
+      print(newsId);
+      if (newsId != null) {
+        newsController.fetchNewsId(newsId).then((news) {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return NewsDetailsPush(
-              news: news,
-            );
+            return NewsDetailsPush(news: news);
           }));
         }).catchError((err) {
           print("error: $err");
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Container(
-                height: 90,
-                decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius:
-                    BorderRadius.all(Radius.circular(10))),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Возникла ошибка при загруке",
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontFamily: "montserrat",
-                          fontWeight: FontWeight.w600),
-                    )
-                  ],
-                ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-            ),
-          );
+          _showErrorSnackBar("Возникла ошибка при загрузке");
         });
+      } else {
+        _showErrorSnackBar("ID новости отсутствует");
       }
-    });
+    }
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Container(
+          height: 90,
+          decoration: const BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          child: Center(
+            child: Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 20,
+                fontFamily: "montserrat",
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+    );
   }
 
   void setStateTopMenu() {
-    newsController.fetchNewsList().then((_listNews) {
-      topMenuOn = _listNews[0].topMenuOn;
-      setState(() {
-
-      });
+    newsController.fetchNewsList().then((listNews) {
+      topMenuOn = listNews[0].topMenuOn;
+      setState(() {});
     });
   }
+
   @override
   Widget build(BuildContext context) {
+    OneSignal.Notifications.requestPermission(true);
+    OneSignal.Notifications.addClickListener((result) {
+      openAppPush(result);
+    });
     return SideMenu(
-      menu: SideMenuList(menuKey: sideMenuKey,),
+      menu: SideMenuList(
+        menuKey: sideMenuKey,
+      ),
       key: sideMenuKey,
       background: AppColors.primary,
       type: SideMenuType.slide,
@@ -244,49 +159,49 @@ class _NavigationMenuState extends State<NavigationMenu> {
               onPressed: () {
                 // controller.selectedIndex.value = 1;
               },
-              icon: const Icon(Icons.search,
-                  size: 35, color: AppColors.primary),
+              icon:
+                  const Icon(Icons.search, size: 35, color: AppColors.primary),
             ),
           ],
         ),
         bottomNavigationBar: Obx(() => BottomNavigationBar(
                 currentIndex: controller.selectedIndex.value,
-            onTap: (index) {
-              if (index == 0 && controller.selectedIndex.value == 0) {
-                // Прокручиваем вверх, если мы на главной странице
-                controller.homeScrollController.animateTo(
-                  0.0,
-                  duration: Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-              } else {
-                // Переключаемся на выбранный экран
-                controller.selectedIndex.value = index;
-              }
-              if (index == 1 && controller.selectedIndex.value == 1) {
-                // Прокручиваем вверх, если мы на главной странице
-                controller.searchScrollController.animateTo(
-                  0.0,
-                  duration: Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-              } else {
-                // Переключаемся на выбранный экран
-                controller.selectedIndex.value = index;
-              }
+                onTap: (index) {
+                  if (index == 0 && controller.selectedIndex.value == 0) {
+                    // Прокручиваем вверх, если мы на главной странице
+                    controller.homeScrollController.animateTo(
+                      0.0,
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  } else {
+                    // Переключаемся на выбранный экран
+                    controller.selectedIndex.value = index;
+                  }
+                  if (index == 1 && controller.selectedIndex.value == 1) {
+                    // Прокручиваем вверх, если мы на главной странице
+                    controller.searchScrollController.animateTo(
+                      0.0,
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  } else {
+                    // Переключаемся на выбранный экран
+                    controller.selectedIndex.value = index;
+                  }
 
-              if (index == 2 && controller.selectedIndex.value == 2) {
-                // Прокручиваем вверх, если мы на главной странице
-                controller.categoriesScrollController.animateTo(
-                  0.0,
-                  duration: Duration(seconds: 1),
-                  curve: Curves.easeInOut,
-                );
-              } else {
-                // Переключаемся на выбранный экран
-                controller.selectedIndex.value = index;
-              }
-            },
+                  if (index == 2 && controller.selectedIndex.value == 2) {
+                    // Прокручиваем вверх, если мы на главной странице
+                    controller.categoriesScrollController.animateTo(
+                      0.0,
+                      duration: Duration(seconds: 1),
+                      curve: Curves.easeInOut,
+                    );
+                  } else {
+                    // Переключаемся на выбранный экран
+                    controller.selectedIndex.value = index;
+                  }
+                },
                 backgroundColor: AppColors.primary,
                 selectedItemColor: Colors.white,
                 unselectedItemColor: Colors.grey,
@@ -313,6 +228,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
       ),
     );
   }
+
   void viewSideMenu() {
     if (sideMenuKey.currentState!.isOpened) {
       sideMenuKey.currentState!.closeSideMenu();
@@ -338,5 +254,4 @@ class NavigationController extends GetxController {
       const RadioScreen(),
     ];
   }
-
 }

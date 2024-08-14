@@ -1,26 +1,20 @@
-import 'dart:async';
-import 'dart:developer';
-import 'dart:ui';
+import "dart:async";
+import "dart:developer";
+import "dart:ui";
 
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:jumping_dot/jumping_dot.dart';
-import 'package:shrink_sidemenu/shrink_sidemenu.dart';
-import 'package:the_moscow_post/common/widgets/news/news_card/first_news_card_horizontal.dart';
-import 'package:the_moscow_post/common/widgets/news/news_card/news_card_horizontal.dart';
-import 'package:the_moscow_post/data/controllers/news_controller.dart';
-import 'package:the_moscow_post/data/controllers/pages_controller.dart';
-import 'package:the_moscow_post/data/models/pages.dart';
-import 'package:the_moscow_post/data/repositories/repository.dart';
-import 'package:the_moscow_post/screens/details/news_details.dart';
-import 'package:the_moscow_post/screens/details/news_details_push.dart';
-import 'package:the_moscow_post/utils/constans/colors.dart';
-import 'package:the_moscow_post/utils/constans/strings.dart';
-
-import '../data/models/news.dart';
-
+import "package:flutter/material.dart";
+import "package:jumping_dot/jumping_dot.dart";
+import "package:shrink_sidemenu/shrink_sidemenu.dart";
+import "package:the_moscow_post/common/widgets/news/news_card/first_news_card_horizontal.dart";
+import "package:the_moscow_post/common/widgets/news/news_card/news_card_horizontal.dart";
+import "package:the_moscow_post/data/controllers/news_controller.dart";
+import "package:the_moscow_post/data/controllers/pages_controller.dart";
+import "package:the_moscow_post/data/models/news.dart";
+import "package:the_moscow_post/data/models/pages.dart";
+import "package:the_moscow_post/data/repositories/repository.dart";
+import "package:the_moscow_post/screens/details/news_details.dart";
+import "package:the_moscow_post/utils/constants/colors.dart";
+import "package:the_moscow_post/utils/constants/strings.dart";
 
 class HomeScreen extends StatefulWidget {
   final ScrollController scrollController;
@@ -56,7 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     allRubric();
   }
-
 
   @override
   void didChangeDependencies() {
@@ -484,7 +477,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             verticalOffset: -4,
                                           ),
                                         )
-                                      : AppNewsCardHorizontal(
+                                      : NewsCardHorizontal(
                                           news: news,
                                           numberItem: index,
                                           listNews: _listNews,
@@ -498,25 +491,19 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void sortPopular() {
-    // Убираем дубликаты из списка новостей
     Set<News> uniqueNews = _listNews.toSet();
     _listNews = uniqueNews.toList();
 
     setState(() {
       isPopularSort = true;
 
-      // Проверяем, есть ли хотя бы один элемент в списке
       if (_listNews.length > 1) {
-        // Сохраняем первый элемент
         News firstElement = _listNews[0];
 
-        // Сортируем оставшиеся элементы (начиная со второго)
-        List<News> newsToSort =
-            _listNews.sublist(1); // Список без первого элемента
+        List<News> newsToSort = _listNews.sublist(1);
         newsToSort.sort(
             (news1, news2) => news2.viewsCount.compareTo(news1.viewsCount));
 
-        // Объединяем первый элемент с отсортированным списком
         _listNews = [firstElement, ...newsToSort];
       }
     });
@@ -553,45 +540,31 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void filterRubrics(bool rubric, int? rubricId) {
-    // Сохраняем первый элемент, чтобы не потерять его
     News? firstElement = _listNews.isNotEmpty ? _listNews[0] : null;
-
-    // Убираем дубликаты из списка новостей
     Set<News> uniqueNews = _listNews.toSet();
     _listNews = uniqueNews.toList();
 
     setState(() {
-      // Если rubric == false, скрываем новости
       if (!rubric) {
         if (rubricId != null) {
-          // Убираем рубрику из списка отображаемых новостей
           _filterRubricId.add(rubricId.toInt());
           _hiddenListNews
               .addAll(_listNews.where((news) => news.rubricId == rubricId));
-
-          // Удаляем все новости с этой рубрикой, кроме первого элемента
           _listNews.removeWhere(
               (news) => news.rubricId == rubricId && news != firstElement);
           log("Filter successful");
         }
       } else {
-        // Если rubric == true, показываем скрытые новости
         if (rubricId != null && _filterRubricId.contains(rubricId)) {
-          // Убираем рубрику из фильтра
           _filterRubricId.remove(rubricId.toInt());
-
-          // Добавляем скрытые новости, убедимся, что первый элемент не удален
           final newsToAdd =
               _hiddenListNews.where((news) => news.rubricId == rubricId);
           _listNews.addAll(newsToAdd.where((news) => news != firstElement));
 
-          _hiddenListNews.removeWhere(
-              (news) => news.rubricId == rubricId); // Удаляем из скрытых
+          _hiddenListNews.removeWhere((news) => news.rubricId == rubricId);
           log("Add filter successful");
         }
       }
-
-      // Восстанавливаем первый элемент, если он был потерян
       if (firstElement != null && !_listNews.contains(firstElement)) {
         _listNews.insert(0, firstElement);
       }
@@ -625,9 +598,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void checkPageController() {
-    pagesController.fetchPageList().then((_listPage) {
-      listPage.addAll(_listPage);
-      print(listPage[0].title);
+    pagesController.fetchPageList().then((listPage) {
+      listPage.addAll(listPage);
     });
   }
 }

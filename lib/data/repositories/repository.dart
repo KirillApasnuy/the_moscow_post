@@ -1,24 +1,37 @@
-import 'package:get/get.dart';
-import 'package:the_moscow_post/data/models/pages.dart';
-import 'package:the_moscow_post/data/models/radioVerify.dart';
+import "dart:convert";
 
-import '../../utils/constans/strings.dart';
-import '../models/news.dart';
+import "package:get/get.dart";
 import "package:http/http.dart" as http;
-import 'dart:convert';
+import "package:the_moscow_post/data/models/news.dart";
+import "package:the_moscow_post/data/models/pages.dart";
+import "package:the_moscow_post/data/models/radioVerify.dart";
+import "package:the_moscow_post/utils/constants/strings.dart";
 
 class Repository {
   final String _baseUrl = "https://nmapi.ru/mp/";
+
   Future<List<News>> getNewsList() async {
     List<News> newsList = [];
     var url = Uri.parse("${_baseUrl}all?key=${Strings.apiKeyNmapi}");
     var response = await http.get(url);
     printInfo(info: "status code: ${response.statusCode}");
     var body = json.decode(response.body);
-    newsList.add(News.fromJson(body["topic_hour"], json.decode(response.body)["view_count_display"] == "true" ? true : false, json.decode(response.body)["serverHost"], json.decode(response.body)["topMenu_on"] == true ? true : false));
+    newsList.add(News.fromJson(
+        body["topic_hour"],
+        json.decode(response.body)["view_count_display"] == "true"
+            ? true
+            : false,
+        json.decode(response.body)["serverHost"],
+        json.decode(response.body)["topMenu_on"] == true ? true : false));
     body = body["data"]["all"];
     for (var i = 0; i < body.length; i++) {
-      newsList.add(News.fromJson(body[i], json.decode(response.body)["view_count_display"] == "true" ? true : false, json.decode(response.body)["serverHost"], json.decode(response.body)["topMenu_on"] == true ? true : false));
+      newsList.add(News.fromJson(
+          body[i],
+          json.decode(response.body)["view_count_display"] == "true"
+              ? true
+              : false,
+          json.decode(response.body)["serverHost"],
+          json.decode(response.body)["topMenu_on"] == true ? true : false));
     }
     return newsList;
   }
@@ -30,19 +43,32 @@ class Repository {
     printInfo(info: "status code: ${response.statusCode}");
     var body = json.decode(response.body)["data"]["all"];
     for (var i = 0; i < body.length; i++) {
-      moreNewsList.add(News.fromJson(body[i], json.decode(response.body)["view_count_display"] == "true" ? true : false, json.decode(response.body)["serverHost"], json.decode(response.body)["topMenu_on"] == "true" ? true : false));
+      moreNewsList.add(News.fromJson(
+          body[i],
+          json.decode(response.body)["view_count_display"] == "true"
+              ? true
+              : false,
+          json.decode(response.body)["serverHost"],
+          json.decode(response.body)["topMenu_on"] == "true" ? true : false));
     }
     return moreNewsList;
   }
 
   Future<List<News>> getNewsRubricNameList(int rubricId) async {
     List<News> newsList = [];
-    var url = Uri.parse("${_baseUrl}all?key=${Strings.apiKeyNmapi}&rubric_id=$rubricId");
+    var url = Uri.parse(
+        "${_baseUrl}all?key=${Strings.apiKeyNmapi}&rubric_id=$rubricId");
     var response = await http.get(url);
     printInfo(info: "status code: ${response.statusCode}");
     var body = json.decode(response.body)["data"]["all"];
     for (var i = 0; i < body.length; i++) {
-      newsList.add(News.fromJson(body[i], json.decode(response.body)["view_count_display"] == "true" ? true : false, json.decode(response.body)["serverHost"], json.decode(response.body)["topMenu_on"] == "true" ? true : false));
+      newsList.add(News.fromJson(
+          body[i],
+          json.decode(response.body)["view_count_display"] == "true"
+              ? true
+              : false,
+          json.decode(response.body)["serverHost"],
+          json.decode(response.body)["topMenu_on"] == "true" ? true : false));
     }
     print(body);
     return newsList;
@@ -50,48 +76,75 @@ class Repository {
 
   Future<List<News>> getMoreNewsRubricNameList(int rubricId, int page) async {
     List<News> newsList = [];
-    var url = Uri.parse("${_baseUrl}all?key=${Strings.apiKeyNmapi}&rubric_id=$rubricId&page=$page");
+    var url = Uri.parse(
+        "${_baseUrl}all?key=${Strings.apiKeyNmapi}&rubric_id=$rubricId&page=$page");
     var response = await http.get(url);
     printInfo(info: "status code: ${response.statusCode}");
     var body = json.decode(response.body)["data"]["all"];
     for (var i = 0; i < body.length; i++) {
-      newsList.add(News.fromJson(body[i], json.decode(response.body)["view_count_display"] == "true" ? true : false, json.decode(response.body)["serverHost"], json.decode(response.body)["topMenu_on"] == "true" ? true : false));
+      newsList.add(News.fromJson(
+          body[i],
+          json.decode(response.body)["view_count_display"] == "true"
+              ? true
+              : false,
+          json.decode(response.body)["serverHost"],
+          json.decode(response.body)["topMenu_on"] == "true" ? true : false));
     }
     return newsList;
   }
 
   Future<List<News>> getNewsSearchList(String search) async {
     List<News> newsSearchList = [];
-    var url = Uri.parse("${_baseUrl}all?key=${Strings.apiKeyNmapi}&search=$search");
+    var url =
+        Uri.parse("${_baseUrl}all?key=${Strings.apiKeyNmapi}&search=$search");
     var response = await http.get(url);
     printInfo(info: "status code: ${response.statusCode}");
     var body = json.decode(response.body)["data"]["all"];
     print(body[0]);
     for (var i = 0; i < body.length; i++) {
-      newsSearchList.add(News.fromJson(body[i], json.decode(response.body)["view_count_display"] == "true" ? true : false, json.decode(response.body)["serverHost"], json.decode(response.body)["topMenu_on"] == "true" ? true : false));
+      newsSearchList.add(News.fromJson(
+          body[i],
+          json.decode(response.body)["view_count_display"] == "true"
+              ? true
+              : false,
+          json.decode(response.body)["serverHost"],
+          json.decode(response.body)["topMenu_on"] == "true" ? true : false));
     }
     return newsSearchList;
   }
 
   Future<List<News>> getMoreNewsSearchList(String search, int page) async {
     List<News> moreNewsSearchList = [];
-    var url = Uri.parse("${_baseUrl}all?key=${Strings.apiKeyNmapi}&search=$search&page=$page");
+    var url = Uri.parse(
+        "${_baseUrl}all?key=${Strings.apiKeyNmapi}&search=$search&page=$page");
     var response = await http.get(url);
     printInfo(info: "status code: ${response.statusCode}");
     var body = json.decode(response.body)["data"]["all"];
     print(body[0]);
     for (var i = 0; i < body.length; i++) {
-      moreNewsSearchList.add(News.fromJson(body[i], json.decode(response.body)["view_count_display"] == "true" ? true : false, json.decode(response.body)["serverHost"], json.decode(response.body)["topMenu_on"] == "true" ? true : false));
+      moreNewsSearchList.add(News.fromJson(
+          body[i],
+          json.decode(response.body)["view_count_display"] == "true"
+              ? true
+              : false,
+          json.decode(response.body)["serverHost"],
+          json.decode(response.body)["topMenu_on"] == "true" ? true : false));
     }
     return moreNewsSearchList;
   }
 
-  Future<News> getNewsId(int id) async {
+  Future<News> getNewsId(String id) async {
     var url = Uri.parse("${_baseUrl}all?key=${Strings.apiKeyNmapi}&id=$id");
     var response = await http.get(url);
     printInfo(info: "status code: ${response.statusCode}");
     var body = json.decode(response.body)["data"];
-    News news = News.fromJson(body[0], json.decode(response.body)["view_count_display"] == "true" ? true : false, json.decode(response.body)["serverHost"], json.decode(response.body)["topMenu_on"] == "true" ? true : false);
+    News news = News.fromJson(
+        body[0],
+        json.decode(response.body)["view_count_display"] == "true"
+            ? true
+            : false,
+        json.decode(response.body)["serverHost"],
+        json.decode(response.body)["topMenu_on"] == "true" ? true : false);
     return news;
   }
 
@@ -109,7 +162,13 @@ class Repository {
     var response = await http.get(url);
     printInfo(info: "status code: ${response.statusCode}");
     var body = json.decode(response.body);
-    News newsHour = News.fromJson(body["topic_hour"], json.decode(response.body)["view_count_display"] == "true" ? true : false, json.decode(response.body)["serverHost"], json.decode(response.body)["topMenu_on"] == "true" ? true : false);
+    News newsHour = News.fromJson(
+        body["topic_hour"],
+        json.decode(response.body)["view_count_display"] == "true"
+            ? true
+            : false,
+        json.decode(response.body)["serverHost"],
+        json.decode(response.body)["topMenu_on"] == "true" ? true : false);
     return newsHour;
   }
 

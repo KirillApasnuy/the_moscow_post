@@ -1,18 +1,17 @@
-import 'dart:ui';
+import "dart:ui";
 
-import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:get/get.dart';
-import 'package:photo_view/photo_view.dart';
-import 'package:share/share.dart';
-import 'package:the_moscow_post/common/widgets/news/news_card/news_card_horizontal.dart';
-import 'package:the_moscow_post/controllers/context/context_controller.dart';
-import 'package:the_moscow_post/data/models/news.dart';
-import 'package:the_moscow_post/utils/constans/colors.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-import '../../utils/constans/edit_text.dart';
-import '../../utils/constans/strings.dart';
+import "package:flutter/material.dart";
+import "package:flutter_html/flutter_html.dart";
+import "package:get/get.dart";
+import "package:photo_view/photo_view.dart";
+import "package:share/share.dart";
+import "package:the_moscow_post/common/widgets/news/news_card/news_card_horizontal.dart";
+import "package:the_moscow_post/controllers/context/context_controller.dart";
+import "package:the_moscow_post/data/models/news.dart";
+import "package:the_moscow_post/utils/constants/colors.dart";
+import "package:the_moscow_post/utils/constants/edit_text.dart";
+import "package:the_moscow_post/utils/constants/strings.dart";
+import "package:url_launcher/url_launcher.dart";
 
 class NewsDetails extends StatefulWidget {
   NewsDetails({
@@ -141,8 +140,7 @@ class _NewsDetailsState extends State<NewsDetails> {
                         padding: const EdgeInsets.only(top: 5, bottom: 0),
                         decoration: BoxDecoration(
                           image: DecorationImage(
-                            image:
-                                NetworkImage(widget.news.mediumImageSrc),
+                            image: NetworkImage(widget.news.mediumImageSrc),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -270,7 +268,8 @@ class _NewsDetailsState extends State<NewsDetails> {
 
                             return GestureDetector(
                               onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
                                   return FullScreenImage(src: src);
                                 }));
                               },
@@ -284,7 +283,7 @@ class _NewsDetailsState extends State<NewsDetails> {
                       height: 20,
                     ),
                     (isPreviewNews && news != null)
-                        ? AppNewsCardHorizontal(
+                        ? NewsCardHorizontal(
                             news: news!,
                             numberItem: widget.numberItem - 1,
                             listNews: widget.listNews,
@@ -298,8 +297,10 @@ class _NewsDetailsState extends State<NewsDetails> {
                             margin: const EdgeInsets.only(top: 10, bottom: 10),
                             child: ElevatedButton(
                                 onPressed: () {
-                                  Share.share(
-                                      "${Strings.baseUrl}${widget.news.fullUrl}");
+                                  Share.share(widget.news.shareUrl != ""
+                                      ? widget.news.shareUrl
+                                      : "${Strings.baseUrl}${widget.news.fullUrl}");
+                                  print(widget.news.shareUrl);
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.primary,
@@ -335,20 +336,15 @@ class _NewsDetailsState extends State<NewsDetails> {
   }
 
   void _launchURL(String url) async {
-    // showModalBottomSheet(context: context, builder: (BuildContext context) {
-    //   return WebViewWidget(controller: WebViewController()..setJavaScriptMode(JavaScriptMode.unrestricted)..loadRequest(Uri.parse(url!)));
-    // });
-    // if (await canLaunch(url)) {
     try {
       await launch(url);
     } on Exception catch (ex) {
       printError(info: ex.toString());
-      await launch("${Strings.baseUrl}$url"); // } else {
+      await launch("${Strings.baseUrl}$url");
     }
-    //   throw 'Could not launch $url';
-    // }
   }
 }
+
 class FullScreenImage extends StatelessWidget {
   final String src;
 

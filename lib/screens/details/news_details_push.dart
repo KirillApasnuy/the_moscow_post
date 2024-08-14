@@ -1,20 +1,22 @@
-import 'dart:ui';
+import "dart:ui";
 
-import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:get/get.dart';
-import 'package:photo_view/photo_view.dart';
-import 'package:share/share.dart';
-import 'package:the_moscow_post/controllers/context/context_controller.dart';
-import 'package:the_moscow_post/data/models/news.dart';
-import 'package:the_moscow_post/utils/constans/colors.dart';
-import 'package:the_moscow_post/utils/constans/edit_text.dart';
-import 'package:the_moscow_post/utils/constans/strings.dart';
-import 'package:url_launcher/url_launcher.dart';
+import "package:flutter/material.dart";
+import "package:flutter_html/flutter_html.dart";
+import "package:get/get.dart";
+import "package:photo_view/photo_view.dart";
+import "package:share/share.dart";
+import "package:the_moscow_post/controllers/context/context_controller.dart";
+import "package:the_moscow_post/data/models/news.dart";
+import "package:the_moscow_post/utils/constants/colors.dart";
+import "package:the_moscow_post/utils/constants/edit_text.dart";
+import "package:the_moscow_post/utils/constants/strings.dart";
+import "package:url_launcher/url_launcher.dart";
 
 class NewsDetailsPush extends StatefulWidget {
   const NewsDetailsPush({super.key, required this.news});
+
   final News news;
+
   @override
   State<NewsDetailsPush> createState() => _NewsDetailsPushState();
 }
@@ -25,6 +27,7 @@ class _NewsDetailsPushState extends State<NewsDetailsPush> {
     // TODO: implement initState
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     News? news;
@@ -96,100 +99,99 @@ class _NewsDetailsPushState extends State<NewsDetailsPush> {
           ),
           child: SingleChildScrollView(
               child: Column(
-                children: [
-                  Container(
-                    decoration: const BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                            color: Color.fromRGBO(0, 0, 0, 0.5),
-                            spreadRadius: 0.01,
-                            blurRadius: 10,
-                            offset: Offset(0, 3)
-                          // changes position of shadow
+            children: [
+              Container(
+                decoration: const BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.5),
+                        spreadRadius: 0.01,
+                        blurRadius: 10,
+                        offset: Offset(0, 3)
+                        // changes position of shadow
                         ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      child: Stack(
-                        children: [
-                          Container(
-                            height: 250,
-                            margin: const EdgeInsets.only(top: 5, bottom: 5),
-                            padding: const EdgeInsets.only(top: 5, bottom: 0),
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image:
-                                NetworkImage(widget.news.mediumImageSrc),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+                  ],
+                ),
+                child: ClipRRect(
+                  child: Stack(
+                    children: [
+                      Container(
+                        height: 250,
+                        margin: const EdgeInsets.only(top: 5, bottom: 5),
+                        padding: const EdgeInsets.only(top: 5, bottom: 0),
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: NetworkImage(widget.news.mediumImageSrc),
+                            fit: BoxFit.cover,
                           ),
-                          // Градиентный оверлей
-                          Container(
-                            height: 255,
-                            // Установите высоту в соответствии с изображением
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  AppColors.primary,
-                                  AppColors.primary.withOpacity(0.75),
-                                  AppColors.primary.withOpacity(0.5),
-                                  Colors.transparent
-                                ],
-                                begin: Alignment.bottomCenter,
-                                end: Alignment.topCenter,
-                              ),
-                            ),
+                        ),
+                      ),
+                      // Градиентный оверлей
+                      Container(
+                        height: 255,
+                        // Установите высоту в соответствии с изображением
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              AppColors.primary,
+                              AppColors.primary.withOpacity(0.75),
+                              AppColors.primary.withOpacity(0.5),
+                              Colors.transparent
+                            ],
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
                           ),
-                          Positioned(
-                              bottom: 20,
-                              left: 10,
-                              child: Column(
-                                children: [
-                                  Container(
-                                    padding:
+                        ),
+                      ),
+                      Positioned(
+                          bottom: 20,
+                          left: 10,
+                          child: Column(
+                            children: [
+                              Container(
+                                padding:
                                     const EdgeInsets.only(left: 10, right: 10),
-                                    width:
+                                width:
                                     ContextController.getWidthScreen(context),
-                                    child: Text(
-                                      EditText.removeHtmlTag(widget.news.title),
-                                      // overflow: TextOverflow.ellipsis,
-                                      maxLines: 10,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 25,
-                                        fontFamily: "montserrat",
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
+                                child: Text(
+                                  EditText.removeHtmlTag(widget.news.title),
+                                  // overflow: TextOverflow.ellipsis,
+                                  maxLines: 10,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 25,
+                                    fontFamily: "montserrat",
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  Container(
-                                    width:
+                                ),
+                              ),
+                              Container(
+                                width:
                                     ContextController.getWidthScreen(context),
-                                    padding: const EdgeInsets.only(left: 10),
-                                    child: widget.news.author != ""
-                                        ? Row(
-                                      children: [
-                                        Text(
-                                            "Автор: ${widget.news.author}  |  ",
-                                            style: const TextStyle(
-                                              fontSize: 11,
-                                              fontFamily: "open_sans",
-                                              overflow: TextOverflow.ellipsis,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.white,
-                                            )),
-                                        Text(
-                                            "Время: ${widget.news.updateDateTime.hour}:${widget.news.updateDateTime.minute.toString().length == 1 ? "0${widget.news.updateDateTime.minute}" : widget.news.updateDateTime.minute}",
-                                            style: const TextStyle(
-                                              fontSize: 11,
-                                              fontFamily: "open_sans",
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.white,
-                                            )),
-                                      ],
-                                    )
-                                        : Text(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: widget.news.author != ""
+                                    ? Row(
+                                        children: [
+                                          Text(
+                                              "Автор: ${widget.news.author}  |  ",
+                                              style: const TextStyle(
+                                                fontSize: 11,
+                                                fontFamily: "open_sans",
+                                                overflow: TextOverflow.ellipsis,
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.white,
+                                              )),
+                                          Text(
+                                              "Время: ${widget.news.updateDateTime.hour}:${widget.news.updateDateTime.minute.toString().length == 1 ? "0${widget.news.updateDateTime.minute}" : widget.news.updateDateTime.minute}",
+                                              style: const TextStyle(
+                                                fontSize: 11,
+                                                fontFamily: "open_sans",
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.white,
+                                              )),
+                                        ],
+                                      )
+                                    : Text(
                                         "Время: ${widget.news.updateDateTime.hour}:${widget.news.updateDateTime.minute}",
                                         style: const TextStyle(
                                           fontSize: 11,
@@ -197,131 +199,124 @@ class _NewsDetailsPushState extends State<NewsDetailsPush> {
                                           fontWeight: FontWeight.w500,
                                           color: Colors.white,
                                         )),
-                                  )
-                                ],
-                              )),
-                        ],
+                              )
+                            ],
+                          )),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 10),
+                    Text(
+                      EditText.removeHtmlTag(widget.news.description),
+                      style: const TextStyle(
+                        fontSize: 25,
+                        fontFamily: "open_sans",
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 10),
-                        Text(
-                          EditText.removeHtmlTag(widget.news.description),
-                          style: const TextStyle(
-                            fontSize: 25,
-                            fontFamily: "open_sans",
-                            fontWeight: FontWeight.w800,
-                          ),
+                    const SizedBox(height: 10),
+                    Html(
+                      data: EditText.addHttpInUri(widget.news.text),
+                      style: {
+                        "h1": Style(
+                          fontSize: FontSize.xLarge,
+                          fontFamily: "open_sans",
+                          fontWeight: FontWeight.w600,
                         ),
-                        const SizedBox(height: 10),
-                        Html(
-                          data: EditText.addHttpInUri(widget.news.text),
-                          style: {
-                            "h1": Style(
-                              fontSize: FontSize.xLarge,
-                              fontFamily: "open_sans",
-                              fontWeight: FontWeight.w600,
-                            ),
-                            "p": Style(
-                              fontSize: FontSize.xLarge,
-                              fontFamily: "open_sans",
-                              fontWeight: FontWeight.normal,
-                            ),
+                        "p": Style(
+                          fontSize: FontSize.xLarge,
+                          fontFamily: "open_sans",
+                          fontWeight: FontWeight.normal,
+                        ),
+                      },
+                      onLinkTap: (url, _, __) {
+                        printInfo(info: url!);
+                        _launchURL(url);
+                      },
+                      extensions: [
+                        TagExtension(
+                          tagsToExtend: {"img"},
+                          builder: (extensionContext) {
+                            final attributes = extensionContext.attributes;
+                            final src = attributes['src'];
+                            if (src == null) return const SizedBox();
 
-                          },
-                          onLinkTap: (url, _, __) {
-                            printInfo(info: url!);
-                            _launchURL(url);
-                          },
-                          extensions: [
-                            TagExtension(
-                              tagsToExtend: {"img"},
-                              builder: (extensionContext) {
-                                final attributes = extensionContext.attributes;
-                                final src = attributes['src'];
-                                if (src == null) return const SizedBox();
-
-                                return GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                      return FullScreenImage(src: src);
-                                    }));
-                                  },
-                                  child: Image.network(src),
-                                );
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return FullScreenImage(src: src);
+                                }));
                               },
-                            ),
-                          ],
-
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Container(
-                                color: AppColors.secondary,
-                                margin: const EdgeInsets.only(top: 10, bottom: 10),
-                                child: ElevatedButton(
-                                    onPressed: () {
-                                      Share.share(
-                                          "${Strings.baseUrl}${widget.news.fullUrl}");
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.primary,
-                                      padding: const EdgeInsets.all(8),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(10)),
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        const Text("Поделиться",
-                                            style: const TextStyle(
-                                                fontSize: 17,
-                                                fontFamily: "montserrat",
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w600)),
-                                        SizedBox(
-                                          width: ContextController.getWidthScreen(
-                                              context) -
-                                              36,
-                                        )
-                                      ],
-                                    ))),
-                          ],
+                              child: Image.network(src),
+                            );
+                          },
                         ),
                       ],
                     ),
-                  ),
-                ],
-              )),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                            color: AppColors.secondary,
+                            margin: const EdgeInsets.only(top: 10, bottom: 10),
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  Share.share(widget.news.shareUrl != ""
+                                      ? widget.news.shareUrl
+                                      : "${Strings.baseUrl}${widget.news.fullUrl}");
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary,
+                                  padding: const EdgeInsets.all(8),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10)),
+                                ),
+                                child: Column(
+                                  children: [
+                                    const Text("Поделиться",
+                                        style: const TextStyle(
+                                            fontSize: 17,
+                                            fontFamily: "montserrat",
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600)),
+                                    SizedBox(
+                                      width: ContextController.getWidthScreen(
+                                              context) -
+                                          36,
+                                    )
+                                  ],
+                                ))),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )),
         ),
       ),
     );
   }
 
   void _launchURL(String url) async {
-    // showModalBottomSheet(context: context, builder: (BuildContext context) {
-    //   return WebViewWidget(controller: WebViewController()..setJavaScriptMode(JavaScriptMode.unrestricted)..loadRequest(Uri.parse(url!)));
-    // });
-    // if (await canLaunch(url)) {
     try {
       await launch(url);
     } on Exception catch (ex) {
       printError(info: ex.toString());
       await launch("${Strings.baseUrl}$url"); // } else {
     }
-    //   throw 'Could not launch $url';
-    // }
   }
 }
-
 
 class FullScreenImage extends StatelessWidget {
   final String src;

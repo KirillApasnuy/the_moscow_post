@@ -1,15 +1,14 @@
-import 'dart:ui';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:mini_music_visualizer/mini_music_visualizer.dart';
-import 'package:radio_player/radio_player.dart';
-import 'package:the_moscow_post/controllers/context/context_controller.dart';
-import 'package:the_moscow_post/data/controllers/radio_verify_controller.dart';
-import 'package:the_moscow_post/data/models/radioVerify.dart';
-import 'package:the_moscow_post/data/repositories/repository.dart';
-import 'package:the_moscow_post/utils/constans/colors.dart';
-import '../utils/constans/strings.dart';
+import "dart:ui";
+
+import "package:flutter/material.dart";
+import "package:mini_music_visualizer/mini_music_visualizer.dart";
+import "package:radio_player/radio_player.dart";
+import "package:the_moscow_post/controllers/context/context_controller.dart";
+import "package:the_moscow_post/data/controllers/radio_verify_controller.dart";
+import "package:the_moscow_post/data/models/radioVerify.dart";
+import "package:the_moscow_post/data/repositories/repository.dart";
+import "package:the_moscow_post/utils/constants/colors.dart";
+import "package:the_moscow_post/utils/constants/strings.dart";
 
 class RadioScreen extends StatefulWidget {
   const RadioScreen({super.key});
@@ -44,7 +43,8 @@ class _RadioScreenState extends State<RadioScreen> {
   @override
   Widget build(BuildContext context) {
     double columnWidth = (ContextController.getWidthScreen(context) * 0.16 - 2);
-    double columnHeight = (ContextController.getHeightScreen(context) * 0.5 - 2);
+    double columnHeight =
+        (ContextController.getHeightScreen(context) * 0.5 - 2);
     return Container(
       width: window.physicalSize.width,
       height: window.physicalSize.height,

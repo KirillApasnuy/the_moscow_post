@@ -1,15 +1,11 @@
-import 'dart:math';
-
-import 'package:flutter/material.dart';
-import 'package:shrink_sidemenu/shrink_sidemenu.dart';
-import 'package:the_moscow_post/controllers/context/context_controller.dart';
-import 'package:the_moscow_post/data/controllers/news_controller.dart';
-import 'package:the_moscow_post/data/controllers/pages_controller.dart';
-import 'package:the_moscow_post/data/models/news.dart';
-import 'package:the_moscow_post/data/models/pages.dart';
-import 'package:the_moscow_post/data/repositories/repository.dart';
-import 'package:the_moscow_post/screens/details/pages_details.dart';
-import 'package:the_moscow_post/utils/constans/colors.dart';
+import "package:flutter/material.dart";
+import "package:shrink_sidemenu/shrink_sidemenu.dart";
+import "package:the_moscow_post/controllers/context/context_controller.dart";
+import "package:the_moscow_post/data/controllers/pages_controller.dart";
+import "package:the_moscow_post/data/models/pages.dart";
+import "package:the_moscow_post/data/repositories/repository.dart";
+import "package:the_moscow_post/screens/details/pages_details.dart";
+import "package:the_moscow_post/utils/constants/colors.dart";
 
 class SideMenuList extends StatefulWidget {
   final GlobalKey<SideMenuState> menuKey;
@@ -48,7 +44,9 @@ class _SideMenuListState extends State<SideMenuList> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(width: 25,),
+                        SizedBox(
+                          width: 25,
+                        ),
                         GestureDetector(
                           child: Text(
                             listPages[index].title,
@@ -60,7 +58,8 @@ class _SideMenuListState extends State<SideMenuList> {
                                 color: Colors.white),
                           ),
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
                               return PagesDetails(pages: listPages[index]);
                             }));
                           },

@@ -15,7 +15,10 @@ class News {
   final bool viewCountDisplay;
   final String serverHost;
   final bool topMenuOn;
-  const News({required this.author,
+  final String shareUrl;
+
+  const News({
+    required this.author,
     required this.id,
     required this.rubricName,
     required this.rubricId,
@@ -31,17 +34,21 @@ class News {
     required this.viewCountDisplay,
     required this.serverHost,
     required this.topMenuOn,
+    required this.shareUrl,
   });
 
-  factory News.fromJson(Map<dynamic, dynamic> json, viewCountDisplay, serverHost, topMenuOn) {
+  factory News.fromJson(
+      Map<dynamic, dynamic> json, viewCountDisplay, serverHost, topMenuOn) {
     return News(
       id: json["id"] ?? 0 as int,
-      rubricName: json["rubric_name"]?? "",
-      rubricId: json["rubric_id"] ?? 0 as int ,
+      rubricName: json["rubric_name"] ?? "",
+      rubricId: json["rubric_id"] ?? 0 as int,
       title: json["title"] ?? "",
       description: json["description"] ?? "",
-      smallImageSrc: "http://$serverHost${json["small_image_src"]}" ?? "url null",
-      mediumImageSrc: "http://$serverHost${json["medium_image_src"]}" ?? "url null",
+      smallImageSrc:
+          "http://$serverHost${json["small_image_src"]}" ?? "url null",
+      mediumImageSrc:
+          "http://$serverHost${json["medium_image_src"]}" ?? "url null",
       updateDateTime: DateTime.parse(json["create_datetime"]),
       viewsCount: json["views_count"] ?? 0 as int,
       text: json["text"] ?? "",
@@ -51,6 +58,7 @@ class News {
       viewCountDisplay: viewCountDisplay,
       serverHost: serverHost,
       topMenuOn: topMenuOn,
+      shareUrl: json["share_url"] ?? "",
     );
   }
 
@@ -70,6 +78,7 @@ class News {
         "day": day,
         "serverHost": serverHost,
         "viewCountDisplay": viewCountDisplay,
+        "share_url": shareUrl,
       };
 
   @override
@@ -91,7 +100,10 @@ class News {
         day == other.day &&
         viewCountDisplay == other.viewCountDisplay &&
         serverHost == other.serverHost &&
+        topMenuOn == other.topMenuOn &&
+        shareUrl == other.shareUrl &&
         fullUrl == other.fullUrl;
+
   }
 
   @override
@@ -113,6 +125,7 @@ class News {
     result = 3 * result + day.hashCode;
     result = 3 * result + serverHost.hashCode;
     result = 3 * result + viewCountDisplay.hashCode;
+    result = 3 * result + shareUrl.hashCode;
 
     return result;
   }

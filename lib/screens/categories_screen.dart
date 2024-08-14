@@ -1,15 +1,13 @@
-import 'dart:ui';
+import "dart:ui";
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:jumping_dot/jumping_dot.dart';
-import 'package:the_moscow_post/common/widgets/news/NewsCategorySeparator.dart';
-import 'package:the_moscow_post/common/widgets/news/news_card/news_card_horizontal.dart';
-import 'package:the_moscow_post/data/controllers/news_controller.dart';
-import 'package:the_moscow_post/data/repositories/repository.dart';
-import 'package:the_moscow_post/utils/constans/colors.dart';
-
-import '../data/models/news.dart';
+import "package:flutter/material.dart";
+import "package:jumping_dot/jumping_dot.dart";
+import "package:the_moscow_post/common/widgets/news/NewsCategorySeparator.dart";
+import "package:the_moscow_post/common/widgets/news/news_card/news_card_horizontal.dart";
+import "package:the_moscow_post/data/controllers/news_controller.dart";
+import "package:the_moscow_post/data/models/news.dart";
+import "package:the_moscow_post/data/repositories/repository.dart";
+import "package:the_moscow_post/utils/constants/colors.dart";
 
 class CategoriesScreen extends StatefulWidget {
   final ScrollController scrollController;
@@ -172,101 +170,100 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             width: window.physicalSize.width,
             child: isLoading
                 ? const Column(
-              children: [
-                SizedBox(height: 200),
-                CircularProgressIndicator(color: AppColors.primary),
-              ],
-            )
-                : isFail
-                ? Center(
-              child: ListView(
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 200),
-                      const Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Text(
-                          textAlign: TextAlign.center,
-                          "Произошла ошибка, проверьте подключение к интернету.",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontFamily: "montserrat",
-                            color: AppColors.primary,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ),
-                      JumpingDots(
-                        color: AppColors.primary,
-                        radius: 7,
-                        numberOfDots: 3,
-                        animationDuration:
-                        const Duration(milliseconds: 220),
-                        verticalOffset: -4,
-                      ),
+                      SizedBox(height: 200),
+                      CircularProgressIndicator(color: AppColors.primary),
                     ],
-                  ),
-                ],
-              ),
-            )
-                : Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    controller: widget.scrollController,
-                    itemCount: _listNews.length,
-                    itemBuilder: (context, index) {
-                      News news = _listNews[index];
-                      if (isSelectCategory) {
-                        if (index == 0) {
-                          return NewsCategorySeparator(
-                            title: news.rubricName,
-                            function: allRubric,
-                          );
-                        }
-                        return Column(
+                  )
+                : isFail
+                    ? Center(
+                        child: ListView(
                           children: [
-                            AppNewsCardHorizontal(
-                              news: news,
-                              numberItem: index,
-                              listNews: _listNews,
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const SizedBox(height: 200),
+                                const Padding(
+                                  padding: EdgeInsets.all(20),
+                                  child: Text(
+                                    textAlign: TextAlign.center,
+                                    "Произошла ошибка, проверьте подключение к интернету.",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontFamily: "montserrat",
+                                      color: AppColors.primary,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                ),
+                                JumpingDots(
+                                  color: AppColors.primary,
+                                  radius: 7,
+                                  numberOfDots: 3,
+                                  animationDuration:
+                                      const Duration(milliseconds: 220),
+                                  verticalOffset: -4,
+                                ),
+                              ],
                             ),
-                            index == _listNews.length - 1
-                                ? JumpingDots(
-                              color: AppColors.primary,
-                              radius: 7,
-                              numberOfDots: 3,
-                              animationDuration:
-                              const Duration(
-                                  milliseconds: 220),
-                              verticalOffset: -4,
-                            )
-                                : Container(),
                           ],
-                        );
-                      } else {
-                        if (index % 5 == 0 || index == 0) {
-                          return NewsCategorySeparator(
-                            function: () {
-                              selectRubric(news.rubricId);
-                            },
-                            title: news.rubricName,
-                          );
-                        }
-                        return AppNewsCardHorizontal(
-                          news: news,
-                          numberItem: index,
-                          listNews: _listNews,
-                        );
-                      }
-                    },
-                  ),
-                ),
-              ],
-            ),
+                        ),
+                      )
+                    : Column(
+                        children: [
+                          Expanded(
+                            child: ListView.builder(
+                              controller: widget.scrollController,
+                              itemCount: _listNews.length,
+                              itemBuilder: (context, index) {
+                                News news = _listNews[index];
+                                if (isSelectCategory) {
+                                  if (index == 0) {
+                                    return NewsCategorySeparator(
+                                      title: news.rubricName,
+                                      function: allRubric,
+                                    );
+                                  }
+                                  return Column(
+                                    children: [
+                                      NewsCardHorizontal(
+                                        news: news,
+                                        numberItem: index,
+                                        listNews: _listNews,
+                                      ),
+                                      index == _listNews.length - 1
+                                          ? JumpingDots(
+                                              color: AppColors.primary,
+                                              radius: 7,
+                                              numberOfDots: 3,
+                                              animationDuration: const Duration(
+                                                  milliseconds: 220),
+                                              verticalOffset: -4,
+                                            )
+                                          : Container(),
+                                    ],
+                                  );
+                                } else {
+                                  if (index % 5 == 0 || index == 0) {
+                                    return NewsCategorySeparator(
+                                      function: () {
+                                        selectRubric(news.rubricId);
+                                      },
+                                      title: news.rubricName,
+                                    );
+                                  }
+                                  return NewsCardHorizontal(
+                                    news: news,
+                                    numberItem: index,
+                                    listNews: _listNews,
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
           ),
         ),
       ),

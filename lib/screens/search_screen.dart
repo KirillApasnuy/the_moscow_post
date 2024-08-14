@@ -1,18 +1,19 @@
-import 'dart:ui';
+import "dart:ui";
 
-import 'package:flutter/material.dart';
-import 'package:jumping_dot/jumping_dot.dart';
-import 'package:the_moscow_post/data/controllers/news_controller.dart';
-import 'package:the_moscow_post/data/repositories/repository.dart';
-import 'package:the_moscow_post/utils/constans/colors.dart';
-
-import '../common/widgets/news/news_card/news_card_horizontal.dart';
-import '../data/models/news.dart';
-import '../utils/constans/strings.dart';
+import "package:flutter/material.dart";
+import "package:jumping_dot/jumping_dot.dart";
+import "package:the_moscow_post/common/widgets/news/news_card/news_card_horizontal.dart";
+import "package:the_moscow_post/data/controllers/news_controller.dart";
+import "package:the_moscow_post/data/models/news.dart";
+import "package:the_moscow_post/data/repositories/repository.dart";
+import "package:the_moscow_post/utils/constants/colors.dart";
+import "package:the_moscow_post/utils/constants/strings.dart";
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key, required this.scrollController});
+
   final ScrollController scrollController;
+
   @override
   State<SearchScreen> createState() => _SearchScreenState();
 }
@@ -23,6 +24,7 @@ class _SearchScreenState extends State<SearchScreen> {
   final _textController = TextEditingController();
   bool isLoading = false;
   int page = 0;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -63,15 +65,12 @@ class _SearchScreenState extends State<SearchScreen> {
                           controller: _textController,
                           onSubmitted: (text) {
                             addNewsSearchList(_textController.text);
-                            setState(() {
-
-                            });
+                            setState(() {});
                           },
                           decoration: InputDecoration(
                             hintText: Strings.hintSearch,
                             focusColor: AppColors.primary,
                             hoverColor: AppColors.primary,
-
                             hintStyle: const TextStyle(
                               fontSize: 15,
                               fontFamily: "montserrat",
@@ -92,9 +91,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       IconButton(
                           onPressed: () {
                             addNewsSearchList(_textController.text);
-                            setState(() {
-
-                            });
+                            setState(() {});
                           },
                           icon: const Icon(
                             Icons.search,
@@ -102,73 +99,77 @@ class _SearchScreenState extends State<SearchScreen> {
                           ))
                     ],
                   )),
-              isLoading ? const Column(
-                children: [
-                  SizedBox(height: 200,),
-                  Center(
-                    child: CircularProgressIndicator(color: AppColors.primary,),
-                  )
-                ],
-              )
-                  :
-              _listNews.isEmpty
-                  ? Container(
-                      padding: EdgeInsets.only(top: 100),
-                      child: Text(
-                        textAlign: TextAlign.center,
-                        "Введите текст для поиска",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontFamily: "montserrat",
-                            fontSize: 30),
-                      ),
-                    )
-                  :
-                   Expanded(
-                      child: ListView.builder(
-                        controller: widget.scrollController,
-                        itemCount: _listNews.length,
-                        itemBuilder: (context, index) {
-                          News news = _listNews[index];
-                          return index == _listNews.length - 1
-                          ? Padding(
-                          padding: const EdgeInsets.all(5),
-                          child: JumpingDots(
-                          color: AppColors.primary,
-                          radius: 7,
-                          numberOfDots: 3,
-                          animationDuration:
-                          const Duration(milliseconds: 220),
-                          verticalOffset: -4,
+              isLoading
+                  ? const Column(
+                      children: [
+                        SizedBox(
+                          height: 200,
+                        ),
+                        Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.primary,
                           ),
-                          ) : AppNewsCardHorizontal(
-                            news: news,
-                            numberItem: index,
-                            listNews: _listNews,
-                          );
-                        },
-                      ),
-                    ),
+                        )
+                      ],
+                    )
+                  : _listNews.isEmpty
+                      ? Container(
+                          padding: EdgeInsets.only(top: 100),
+                          child: Text(
+                            textAlign: TextAlign.center,
+                            "Введите текст для поиска",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontFamily: "montserrat",
+                                fontSize: 30),
+                          ),
+                        )
+                      : Expanded(
+                          child: ListView.builder(
+                            controller: widget.scrollController,
+                            itemCount: _listNews.length,
+                            itemBuilder: (context, index) {
+                              News news = _listNews[index];
+                              return index == _listNews.length - 1
+                                  ? Padding(
+                                      padding: const EdgeInsets.all(5),
+                                      child: JumpingDots(
+                                        color: AppColors.primary,
+                                        radius: 7,
+                                        numberOfDots: 3,
+                                        animationDuration:
+                                            const Duration(milliseconds: 220),
+                                        verticalOffset: -4,
+                                      ),
+                                    )
+                                  : NewsCardHorizontal(
+                                      news: news,
+                                      numberItem: index,
+                                      listNews: _listNews,
+                                    );
+                            },
+                          ),
+                        ),
             ],
           )),
     );
   }
 
   void addNewsSearchList(String search) {
-
     isLoading = true;
-    setState(() { // Устанавливаем флаг загрузки
+    setState(() {
+      // Устанавливаем флаг загрузки
     });
 
     newsController.fetchNewsSearchList(search).then((listNews) {
       setState(() {
         _listNews.clear();
         _listNews.addAll(listNews);
-        isLoading = false; // Обнуляем флаг загрузки после получения данных
+        isLoading = false;
       });
     }).catchError((error) {
       setState(() {
-        isLoading = false; // Убедитесь, что флаг сбрасывается и в случае ошибки
+        isLoading = false;
       });
       print("Ошибка получения новостей: $error");
     });
@@ -176,10 +177,12 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void _scrollListener() {
     if (widget.scrollController.position.pixels >=
-          widget.scrollController.position.maxScrollExtent - 200) {
+        widget.scrollController.position.maxScrollExtent - 200) {
       setState(() {
         page++;
-        newsController.fetchMoreNewsSearchList(_textController.text, page).then((listNews) {
+        newsController
+            .fetchMoreNewsSearchList(_textController.text, page)
+            .then((listNews) {
           setState(() {
             _listNews.addAll(listNews);
             Set<News> uniqueNews = _listNews.toSet();

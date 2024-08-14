@@ -1,5 +1,5 @@
-import 'package:the_moscow_post/data/models/pages.dart';
-import 'package:the_moscow_post/data/repositories/repository.dart';
+import "package:the_moscow_post/data/models/pages.dart";
+import "package:the_moscow_post/data/repositories/repository.dart";
 
 class PagesController {
   final Repository _repository;

@@ -1,9 +1,9 @@
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:radio_player/radio_player.dart'; // Импортируем RadioPlayer
+import "package:shared_preferences/shared_preferences.dart";
+import "package:radio_player/radio_player.dart";
 
 class RadioPlayerManager {
   late RadioPlayer _radioPlayer;
-  bool _isPlaying = false; // Храним состояние воспроизведения
+  bool _isPlaying = false;
 
   RadioPlayerManager() {
     _radioPlayer = RadioPlayer();
@@ -33,11 +33,11 @@ class RadioPlayerManager {
 
   Future<void> _loadPlayingState() async {
     final prefs = await SharedPreferences.getInstance();
-    _isPlaying = prefs.getBool('isPlaying') ?? false; // По умолчанию false
+    _isPlaying = prefs.getBool('isPlaying') ?? false;
   }
 
   Future<void> _savePlayingState() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isPlaying', _isPlaying); // Сохраняем состояние
+    await prefs.setBool('isPlaying', _isPlaying);
   }
 }
