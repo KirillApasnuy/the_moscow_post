@@ -300,7 +300,6 @@ class _NewsDetailsState extends State<NewsDetails> {
                                   Share.share(widget.news.shareUrl != ""
                                       ? widget.news.shareUrl
                                       : "${Strings.baseUrl}${widget.news.fullUrl}");
-                                  print(widget.news.shareUrl);
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.primary,

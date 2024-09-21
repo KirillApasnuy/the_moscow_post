@@ -129,7 +129,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           SnackBar(
             content: Container(
               height: 90,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColors.secondary,
                 borderRadius: BorderRadius.all(Radius.circular(10)),
               ),

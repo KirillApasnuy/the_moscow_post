@@ -21,8 +21,9 @@ class _RadioScreenState extends State<RadioScreen> {
   final RadioVerifyController radioVerifyController =
       RadioVerifyController(Repository());
   late RadioPlayer radioPlayer;
-  bool isPlaying = false;
   RadioVerify? radioVerify;
+  bool isPlaying = false;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -36,15 +37,20 @@ class _RadioScreenState extends State<RadioScreen> {
           url: radioVerify?.radioHost ?? Strings.radioUrl,
           imagePath: "https://i.imgur.com/CWxlPpP.png",
         );
+        isLoading = false;
       });
+    }).catchError((onError) {
+      isLoading = false;
+      isPlaying = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     double columnWidth = (ContextController.getWidthScreen(context) * 0.16 - 2);
-    double columnHeight =
-        (ContextController.getHeightScreen(context) * 0.5 - 2);
+    double columnHeight = ContextController.getWidthScreen(context) >= 600
+        ? (ContextController.getHeightScreen(context) * 0.1 - 2)
+        : (ContextController.getHeightScreen(context) * 0.5 - 2);
     return Container(
       width: window.physicalSize.width,
       height: window.physicalSize.height,
@@ -121,7 +127,36 @@ class _RadioScreenState extends State<RadioScreen> {
                     isPlaying = !isPlaying;
                   });
                 } else {
+                  isLoading ?
                   ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Container(
+                        height: 90,
+                        decoration: BoxDecoration(
+                            color: Colors.orange,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        child: const Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Идёт загрузка данных\nподождите",
+                              maxLines: 2,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: "montserrat",
+                                  fontWeight: FontWeight.w600),
+                            )
+                          ],
+                        ),
+                      ),
+                      behavior: SnackBarBehavior.floating,
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                    ),
+                  ):ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Container(
                         height: 90,
@@ -134,7 +169,7 @@ class _RadioScreenState extends State<RadioScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "В данный момент радио                не работает",
+                              "В данный момент радио\nне работает",
                               maxLines: 2,
                               textAlign: TextAlign.center,
                               style: TextStyle(

@@ -1,7 +1,7 @@
 name: the_moscow_post
 description: "App for review actuality news"
 publish_to: 'none'
-version: 2024.08.14
+version: 2024.09.21
 
 environment:
   sdk: '>=3.4.3 <4.0.0'
